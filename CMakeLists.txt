@@ -35,8 +35,8 @@ add_library(${PROJECT_NAME}-lib STATIC
         Algorithm/SCHC.h
         vectorUtils/VectorUtils.cpp
         vectorUtils/VectorUtils.h
-        Algorithm/ExamDataManipulator.cpp
-        Algorithm/ExamDataManipulator.h
+        Algorithm/ExamTTSolutionManipulator.cpp
+        Algorithm/ExamTTSolutionManipulator.h
         data_utils/ExamDataPopulator.cpp
         data_utils/ExamDataPopulator.h
         data_utils/ExamDataParserFactory.cpp

@@ -39,13 +39,13 @@ int main() {
         return 1;
     }
 
-    // Create an ExamDataManipulator that offers methods to create or change a solution
-    auto manipulator = std::make_shared<ExamDataManipulator>(examDataPtr);
-    // Create an Initial solution object that uses the ExamDataManipulator to create an initial solution
+    // Create an ExamTTSolutionManipulator that offers methods to create or change a solution_
+    auto manipulator = std::make_shared<ExamTTSolutionManipulator>(examDataPtr);
+    // Create an Initial solution_ object that uses the ExamTTSolutionManipulator to create an initial solution_
     InitialSolution initialSolution(manipulator);
     initialSolution.random = true;
     auto examData = initialSolution.build();
-    // The ExamTTData object now has an initial solution if any
+    // The ExamTTData object now has an initial solution_ if any
     if (examData == nullptr) {
         std::cout << "Failed to build Initial Solution!" << std::endl;
         return 1;
@@ -54,7 +54,7 @@ int main() {
     // Launch multiple threads
     for (int i = 0; i < num_threads; ++i) {
         std::cout << std::to_string(i) << std::endl;
-        auto examDataManipulator = std::make_shared<ExamDataManipulator>(std::make_shared<ExamTTData>(*examData));
+        auto examDataManipulator = std::make_shared<ExamTTSolutionManipulator>(std::make_shared<ExamTTData>(*examData));
         auto algo = std::make_shared<SCHC>(examDataManipulator);
         algo->stopTime = 0.0;
         algo->random = true;
@@ -75,9 +75,9 @@ int main() {
             futures.clear();
         }
     }
-    // Get the best solution from a multiset sorted by cost asc
+    // Get the best solution_ from a multiset sorted by cost asc
     auto result = *logger.getData().begin();
-    // Export the solution to the original filepath the ExamTTData was created from
+    // Export the solution_ to the original filepath the ExamTTData was created from
     ExamTTSolutionAccdbExporter::exportExamTTSolution(result);
     logger.reset();
 

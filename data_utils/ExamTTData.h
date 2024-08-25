@@ -15,7 +15,7 @@
 #include <filesystem>
 #include "DateTimeProvider.h"
 
-/**@brief Holds the data to create or change a solution */
+/**@brief Holds the data to create or change a solution_ */
 struct ExamTTData{
     enum class RoomType {Online, Single, Normal, External, Unknown};
     std::string filePath;
@@ -34,14 +34,14 @@ struct ExamTTData{
     std::vector<int> periodSlot;
     std::vector<int> periodWeek;
     std::vector<std::string> periodDate;
-    std::vector <int> roomID; //use id when writing timetable solution to file
+    std::vector <int> roomID; //use id when writing timetable solution_ to file
     std::vector <std::string> roomName; //for convenience only
     std::vector <int> roomSize;
     std::vector<RoomType> roomType;
     /**@brief Binary matrix: for room (row) is period (column) valid.
     * Possible periodDay for each room. Does not say if room is actually available in period.*/
     std::vector<std::vector<int>> roomPeriodsValidity; //inconvenient. not used currently
-    std::vector<int> examID; //use id when writing timetable solution to file
+    std::vector<int> examID; //use id when writing timetable solution_ to file
     std::vector<std::string> examName; //for convenience only
     std::vector<int> examSize;
     /**@brief Binary matrix: for exam (row) is period (column) valid?
@@ -74,7 +74,7 @@ struct ExamTTData{
     /**@brief 1 if room available, 0 if room assigned, -1 if room invalid*/
     std::vector<std::vector<int>> periodRoomsAvailability; //includes validity. per period more convenient
     /**@brief Weighted matrix showing collision between periods (row) and exams (column).
-     * Used to determine Degree Of Saturation for Graph Coloring initial solution.*/
+     * Used to determine Degree Of Saturation for Graph Coloring initial solution_.*/
     std::vector<std::vector<int>> periodExamCollisions;
     std::vector<std::set<int>> periodExams;
     std::vector<int> examDegreeOfSaturation; //Initial Solution Graph Coloring.

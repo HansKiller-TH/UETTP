@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "Algorithm/ExamDataManipulator.h"
+#include "Algorithm/ExamTTSolutionManipulator.h"
 
 //
 // Created by hansk on 17.05.2024.

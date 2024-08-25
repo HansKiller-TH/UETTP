@@ -11,7 +11,7 @@
 
 std::shared_ptr<ExamTTData> SCHC::run() {
     std::cout << "Running Step Counting Hill Climbing Algorithm..." << std::endl;
-    currentSolution_ = *manipulator_->getData();
+    currentSolution_ = *manipulator_->getSolution();
     start = std::chrono::high_resolution_clock::now();
     //std::cout << (Evaluation::isFeasible(currentSolution_) ? "feasible" : "infeasible") << std::endl;
     //screenOutput::solutionOut(currentSolution_);
@@ -28,7 +28,7 @@ std::shared_ptr<ExamTTData> SCHC::run() {
     while ((stopTime <= 0.0 && notConverged()) || (stopTime > 0.0 && !timesUp())) {
         if (!createCandidateSolution())
             continue;
-        auto candidate = manipulator_->getData();
+        auto candidate = manipulator_->getSolution();
         int candidateCost = 0;
         if(fullCollisionCost)
             candidateCost = calculateCost(*candidate);
@@ -47,7 +47,7 @@ std::shared_ptr<ExamTTData> SCHC::run() {
             if (schc_acp)
                 ++stepCounter; // variant count accepting
         } else {
-            manipulator_->setData(std::make_shared<ExamTTData>(currentSolution_));
+            manipulator_->setSolution(std::make_shared<ExamTTData>(currentSolution_));
             ++stepsWithoutImprovement;
         }
         if (schc_all)

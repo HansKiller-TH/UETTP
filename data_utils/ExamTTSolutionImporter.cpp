@@ -5,12 +5,12 @@
 #include <iostream>
 #include "ExamTTSolutionImporter.h"
 #include "ExamDataParserFactory.h"
-#include "Algorithm/ExamDataManipulator.h"
+#include "Algorithm/ExamTTSolutionManipulator.h"
 #include "vectorUtils/VectorUtils.h"
 
 std::shared_ptr<ExamTTData>
 ExamTTSolutionImporter::import(std::shared_ptr<ExamTTData> examData, std::string &filename) {
-    ExamDataManipulator manipulator(examData);
+    ExamTTSolutionManipulator manipulator(examData);
     auto parser = ExamDataParserFactory::createParser(filename);
     for (const auto &row: parser->parseSolutionExamPeriod()) {
         int examIndex = VectorUtils::indexForValue(examData->examID, row.at(0));

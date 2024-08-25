@@ -15,7 +15,7 @@
  * @brief Implementation of the IExamDataParser interface for parsing exam data from an ACCDB file.
  *
  * This class provides methods to parse different types of exam data such as periods, rooms, exams,
- * students exams, same periods, solution exam periods, and solution exam rooms.
+ * students exams, same periods, solution_ exam periods, and solution_ exam rooms.
  *
  * @note The ExamDataAccdbParser class requires the AccdbFileHandler class to read the ACCDB file.
  */
@@ -26,7 +26,7 @@ public:
      * @brief Implementation of the IExamDataParser interface for parsing exam data from an ACCDB file.
      *
      * This class provides methods to parse different types of exam data such as periods, rooms, exams,
-     * students exams, same periods, solution exam periods, and solution exam rooms.
+     * students exams, same periods, solution_ exam periods, and solution_ exam rooms.
      *
      * @note The ExamDataAccdbParser class requires the AccdbFileHandler class to read the ACCDB file.
      */
@@ -108,7 +108,7 @@ public:
      * @brief Implementation of the IExamDataParser interface for parsing exam data from an ACCDB file.
      *
      * This class provides methods to parse different types of exam data such as periods, rooms, exams,
-     * students exams, same periods, solution exam periods, and solution exam rooms.
+     * students exams, same periods, solution_ exam periods, and solution_ exam rooms.
      *
      * @note The ExamDataAccdbParser class requires the AccdbFileHandler class to read the ACCDB file.
      */
