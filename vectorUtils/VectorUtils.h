@@ -1,0 +1,44 @@
+//
+// Created by hansk on 21.05.2024.
+//
+
+#ifndef STEP_COUNTING_HILL_CLIMBING_ALGORITHM_VECTORUTILS_H
+#define STEP_COUNTING_HILL_CLIMBING_ALGORITHM_VECTORUTILS_H
+
+#include <set>
+#include <vector>
+#include <functional>
+#include <list>
+
+class VectorUtils {
+public:
+    /**@brief Returns all indexes of the vector where the predicate is true. Predicate receives value at index*/
+    static std::list<int>
+    getIndexesWherePredicate(const std::vector<int> &vec, const std::function<bool(const int &)> &pred);
+
+    /**@brief Returns all indexes of the vectors where the predicate is true for all vectors. Predicate receives value at index. Vectors must be same size.*/
+    static std::set<int> getIndexesWherePredicateAllOf(const std::vector<std::vector<int>> &vecs,
+                                                       const std::function<bool(const int &)> &pred);
+
+    static int indexForValue(const std::vector<int> &vec, const int &value);
+
+    static int indexForValue(const std::vector<int> &vec, const std::string &value);
+
+    static std::pair<int, int> getLeastNumberAndSumOfBinsRequired(const int &itemSize, const std::vector<std::pair<int, int>> &binIndexAndSize);
+
+    static void binPackingSmallestAndLeastBins(const int &itemSize, const int &numberOfBinsRequired, int &maxSum,
+                                               const std::vector<std::pair<int, int>> &binIndexAndSize,
+                                               std::set<int> &result, std::set<int> currentBins = {},
+                                               const int currentIndex = 0, const int currentSum = 0);
+
+    static void binPackingLeastBinsAll(const int &itemSize, const std::vector<std::pair<int, int>> &binIndexAndSize,
+                                       const int &numberOfBinsRequired, std::vector<std::set<int>> &results,
+                                       std::set<int> currentBins={},
+                                       int currentIndex = 0, int currentSum = 0);
+
+    static std::vector<std::pair<std::string, std::set<std::string>>>
+    inLineKeyValues(const std::vector<std::vector<std::string>>& data);
+};
+
+
+#endif //STEP_COUNTING_HILL_CLIMBING_ALGORITHM_VECTORUTILS_H
