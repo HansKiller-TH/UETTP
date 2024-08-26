@@ -5,12 +5,13 @@
 #include "ExamDataLogger.h"
 #include "Algorithm/Evaluation.h"
 #include "file_utils/TxtFileHandler.h"
+#include "data_utils/ExamTTSolution.h"
 
-void ExamDataLogger::add(std::shared_ptr<ExamTTData> examData) {
-    solutions.insert(examData);
+void ExamDataLogger::add(std::shared_ptr<ExamTTSolution> solution) {
+    solutions.insert(solution);
 }
 
-std::multiset<std::shared_ptr<ExamTTData>, ExamDataLogger::CompareExamDataCost> ExamDataLogger::getData() {
+std::multiset<std::shared_ptr<ExamTTSolution>> ExamDataLogger::getData() {
     return solutions;
 }
 
@@ -69,7 +70,7 @@ void ExamDataLogger::writeToFileBest() {
     for (int el = 0; el < saturdays.size(); ++el) {
         if(saturdays.at(el)==0)
             continue;
-        str += "'"+ (*solutions.begin())->roomName.at(el) +"': ";
+        str += "'"+ (*solutions.begin())->examData->roomName.at(el) +"': ";
         str += std::to_string(saturdays.at(el));
         if (el + 1 < saturdays.size())
             str += ", "; // apparently python don't even care about trailing comma, but we do care
@@ -90,11 +91,11 @@ void ExamDataLogger::writeToFileBest() {
 
 void ExamDataLogger::writeToFileTimesCosts() {
     struct CompareExamDataTime {
-        bool operator()(const std::shared_ptr<ExamTTData>& e1, const std::shared_ptr<ExamTTData>& e2) const {
+        bool operator()(const std::shared_ptr<ExamTTSolution>& e1, const std::shared_ptr<ExamTTSolution>& e2) const {
             return e1->runTime < e2->runTime;
         }
     };
-    std::multiset<std::shared_ptr<ExamTTData>,CompareExamDataTime> datas;
+    std::multiset<std::shared_ptr<ExamTTSolution>,CompareExamDataTime> datas;
     datas.insert(solutions.begin(),solutions.end());
     std::string name = (*solutions.begin())->configuration + "runs" + std::to_string(runs);
     TxtFileHandler fh(name + ".py");

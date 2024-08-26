@@ -64,17 +64,18 @@ struct ExamTTData{
     /**@brief For each exam the exams that have to be in the same period with it
      * if any*/
     std::vector<std::set<int>> examSamePeriod;
+    std::vector<std::vector<std::vector<int>>> examsCollisionsLimit;
 //private:
-    // Solution dependent data
+    /*// Solution dependent data
     //these two essentially represent the timetable. Indexes will have te be replaced with original IDs.
-    /**@brief List of rooms' indexes for each exam*/
+    *//**@brief List of rooms' indexes for each exam*//*
     std::vector<std::set<int>> examRooms;
-    /**@brief Period's index for each exam*/
+    *//**@brief Period's index for each exam*//*
     std::vector<int> examPeriod;
-    /**@brief 1 if room available, 0 if room assigned, -1 if room invalid*/
+    *//**@brief 1 if room available, 0 if room assigned, -1 if room invalid*//*
     std::vector<std::vector<int>> periodRoomsAvailability; //includes validity. per period more convenient
-    /**@brief Weighted matrix showing collision between periods (row) and exams (column).
-     * Used to determine Degree Of Saturation for Graph Coloring initial solution_.*/
+    *//**@brief Weighted matrix showing collision between periods (row) and exams (column).
+     * Used to determine Degree Of Saturation for Graph Coloring initial solution_.*//*
     std::vector<std::vector<int>> periodExamCollisions;
     std::vector<std::set<int>> periodExams;
     std::vector<int> examDegreeOfSaturation; //Initial Solution Graph Coloring.
@@ -84,9 +85,9 @@ struct ExamTTData{
     int costLimit = 0;
     int costAbove = 0;
     std::string creationDateTime;
-    /** cost and time */
+    *//** cost and time *//*
     std::vector<std::pair<int,double>> costAndTimeLog;
-    std::string configuration;
+    std::string configuration;*/
 
     /** Collision matrix for student with 7 enrolments max */
     std::vector<std::vector<int>> examsCollisionsLimit7;

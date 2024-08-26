@@ -17,9 +17,9 @@ std::shared_ptr<ExamTTData> SCHC::run() {
     //screenOutput::solutionOut(currentSolution_);
     int currentCost = 0;
     if(fullCollisionCost)
-        currentCost = calculateCost(currentSolution_);
+        currentCost = Evaluation::calculateCost(currentSolution_);
     else
-        currentCost = calculateAltCost(currentSolution_);
+        currentCost = Evaluation::calculateAltCost(currentSolution_);
     int costBound = currentCost;
     // costAndTimeLog.emplace_back(costBound,0.0);
     int stepCounter = 0;
@@ -31,9 +31,9 @@ std::shared_ptr<ExamTTData> SCHC::run() {
         auto candidate = manipulator_->getSolution();
         int candidateCost = 0;
         if(fullCollisionCost)
-            candidateCost = calculateCost(*candidate);
+            candidateCost = Evaluation::calculateCost(*candidate);
         else
-            candidateCost = calculateAltCost(*candidate);
+            candidateCost = Evaluation::calculateAltCost(*candidate);
         if (candidateCost < costBound || candidateCost <= currentCost) {
             if (candidateCost < currentCost) {
                 stepsWithoutImprovement = 0;

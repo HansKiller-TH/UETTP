@@ -10,7 +10,7 @@
 
 class ConvergenceLogger : ILogger {
 public:
-    void add(std::shared_ptr<ExamTTData> examData) override;
+    void add(std::shared_ptr<ExamTTSolution> solution) override;
     std::vector<std::vector<std::pair<int, double>>> getData();
 
     void writeToFile() override;

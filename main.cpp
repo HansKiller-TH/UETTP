@@ -38,15 +38,12 @@ int main() {
         std::cout << "Failed to parse data, make sure the file " << filepath << " is not malformed or empty.\n";
         return 1;
     }
-
-    // Create an ExamTTSolutionManipulator that offers methods to create or change a solution_
-    auto manipulator = std::make_shared<ExamTTSolutionManipulator>(examDataPtr);
     // Create an Initial solution_ object that uses the ExamTTSolutionManipulator to create an initial solution_
-    InitialSolution initialSolution(manipulator);
+    InitialSolution initialSolution(examDataPtr);
     initialSolution.random = true;
-    auto examData = initialSolution.build();
+    auto solution = initialSolution.build();
     // The ExamTTData object now has an initial solution_ if any
-    if (examData == nullptr) {
+    if (solution == nullptr) {
         std::cout << "Failed to build Initial Solution!" << std::endl;
         return 1;
     }
@@ -54,8 +51,7 @@ int main() {
     // Launch multiple threads
     for (int i = 0; i < num_threads; ++i) {
         std::cout << std::to_string(i) << std::endl;
-        auto examDataManipulator = std::make_shared<ExamTTSolutionManipulator>(std::make_shared<ExamTTData>(*examData));
-        auto algo = std::make_shared<SCHC>(examDataManipulator);
+        auto algo = std::make_shared<SCHC>(std::make_shared<ExamTTSolution>(solution->deepCopy()));
         algo->stopTime = 0.0;
         algo->random = true;
         algo->fullCollisionCost = true;

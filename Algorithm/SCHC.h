@@ -16,10 +16,11 @@
 /** Step-Counting-Hill-Climbing-Algorithm improves an initial solution_ with perturbative heuristics */
 class SCHC {
 public:
-    explicit SCHC(std::shared_ptr<ExamTTSolutionManipulator> examDataManipulator) :
-            manipulator_(std::move(examDataManipulator)), gen_(std::random_device{}()) {
+    explicit SCHC(const std::shared_ptr<ExamTTSolution>& solution) : gen_(std::random_device{}()) {
         std::random_device rd;
         gen_.seed(rd());
+        currentSolution_ = *solution;
+        manipulator_ = std::make_shared<ExamTTSolutionManipulator>(solution);
     }
     /** Executes the algorithm. Returns a shared_ptr to the last ExamTTData object with the best solution_*/
     std::shared_ptr<ExamTTData> run();
@@ -47,7 +48,7 @@ public:
     int fraction = 100;
     /** cost and time */
     std::vector<std::pair<int,double>> valueLog;
-    ExamTTData currentSolution_;
+    ExamTTSolution currentSolution_;
 private:
     std::shared_ptr<ExamTTSolutionManipulator> manipulator_;
     std::mt19937 gen_;

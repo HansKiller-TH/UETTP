@@ -11,7 +11,7 @@
 
 
 void ExamTTSolutionManipulator::setSolution(std::shared_ptr<ExamTTSolution> solution) {
-    this->solution_ = std::move(solution);
+    this->solution_ = solution;
 }
 
 std::shared_ptr<ExamTTSolution> ExamTTSolutionManipulator::getSolution() {

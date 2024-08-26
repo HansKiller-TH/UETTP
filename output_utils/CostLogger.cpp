@@ -7,9 +7,9 @@
 #include "file_utils/TxtFileHandler.h"
 #include "DateTimeProvider.h"
 
-void CostLogger::add(std::shared_ptr<ExamTTData> examData) {
-    costData.emplace_back(std::vector<int>{examData->cost, examData->costLimit, examData->costAbove});
-    timeData.emplace_back(examData->runTime);
+void CostLogger::add(std::shared_ptr<ExamTTSolution> solution) {
+    costData.emplace_back(std::vector<int>{solution->cost, solution->costLimit, solution->costAbove});
+    timeData.emplace_back(solution->runTime);
 }
 
 std::vector<std::vector<int>> CostLogger::getData() {
