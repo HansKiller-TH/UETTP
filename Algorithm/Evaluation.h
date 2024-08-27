@@ -9,30 +9,32 @@
 #include <memory>
 #include <array>
 #include "data_utils/ExamTTData.h"
+#include "data_utils/ExamTTSolution.h"
 
 class Evaluation {
 public:
-    static std::pair<std::vector<std::multiset<int>>, std::vector<std::multiset<int>>> spreadPerStudent(std::shared_ptr<ExamTTData> data);
+    static std::pair<std::vector<std::multiset<int>>, std::vector<std::multiset<int>>> spreadPerStudent(
+            std::shared_ptr<ExamTTSolution> data);
 
-    static std::vector<int> roomsOnSaturday(std::shared_ptr<ExamTTData> data);
+    static std::vector<int> roomsOnSaturday(std::shared_ptr<ExamTTSolution> data);
 
-    static std::vector<int> studentsLastWeek(std::shared_ptr<ExamTTData> data);
+    static std::vector<int> studentsLastWeek(std::shared_ptr<ExamTTSolution> data);
 
-    static bool isFeasible(const ExamTTData &data);
+    static bool isFeasible(const ExamTTSolution &data);
 
-    static int calculateCost(ExamTTData &data);
+    static int calculateCost(ExamTTSolution &data);
 
-    static int calculateAltCost(ExamTTData &data);
+    static int calculateAltCost(ExamTTSolution &data);
 
-    static int spreadCost(const ExamTTData &data);
+    static int spreadCost(const ExamTTSolution &data);
 
-    static int roomCost(const ExamTTData &data);
+    static int roomCost(const ExamTTSolution &data);
 
-    static int periodCost(const ExamTTData &data);
+    static int periodCost(const ExamTTSolution &data);
 
-    static int spreadCostLimit(const ExamTTData &data);
+    static int spreadCostLimit(const ExamTTSolution &data);
 
-    static int spreadCostBeyond(const ExamTTData &data);
+    static int spreadCostBeyond(const ExamTTSolution &data);
 
     static double getCollisionDensity(const std::vector<std::vector<int>> &adjacencyMatrix);
 
@@ -42,11 +44,11 @@ private:
     constexpr static const std::array<int, 7> P_EXAM_DAYS_OF_LAST_WEEK = {1, 2, 4, 8, 16, 32, 64};
     static const int P_ROOM_SATURDAY = 256;
 
-    static bool hasInvalidPeriod(const ExamTTData &data);
+    static bool hasInvalidPeriod(const ExamTTSolution &data);
 
-    static bool hasRoomCollision(const ExamTTData &data);
+    static bool hasRoomCollision(const ExamTTSolution &data);
 
-    static bool hasSpreadCollision(const ExamTTData &data);
+    static bool hasSpreadCollision(const ExamTTSolution &data);
 
 };
 

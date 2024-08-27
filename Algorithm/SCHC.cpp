@@ -9,17 +9,16 @@
 #include "Evaluation.h"
 #include "CostLogger.h"
 
-std::shared_ptr<ExamTTData> SCHC::run() {
+std::shared_ptr<ExamTTSolution> SCHC::run() {
     std::cout << "Running Step Counting Hill Climbing Algorithm..." << std::endl;
-    currentSolution_ = *manipulator_->getData();
     start = std::chrono::high_resolution_clock::now();
     //std::cout << (Evaluation::isFeasible(currentSolution_) ? "feasible" : "infeasible") << std::endl;
     //screenOutput::solutionOut(currentSolution_);
     int currentCost = 0;
     if(fullCollisionCost)
-        currentCost = calculateCost(currentSolution_);
+        currentCost = Evaluation::calculateCost(*currentSolution_);
     else
-        currentCost = calculateAltCost(currentSolution_);
+        currentCost = Evaluation::calculateAltCost(*currentSolution_);
     int costBound = currentCost;
     // costAndTimeLog.emplace_back(costBound,0.0);
     int stepCounter = 0;
@@ -28,12 +27,12 @@ std::shared_ptr<ExamTTData> SCHC::run() {
     while ((stopTime <= 0.0 && notConverged()) || (stopTime > 0.0 && !timesUp())) {
         if (!createCandidateSolution())
             continue;
-        auto candidate = manipulator_->getData();
+        auto candidate = manipulator_->getSolution();
         int candidateCost = 0;
         if(fullCollisionCost)
-            candidateCost = calculateCost(*candidate);
+            candidateCost = Evaluation::calculateCost(*candidate);
         else
-            candidateCost = calculateAltCost(*candidate);
+            candidateCost = Evaluation::calculateAltCost(*candidate);
         if (candidateCost < costBound || candidateCost <= currentCost) {
             if (candidateCost < currentCost) {
                 stepsWithoutImprovement = 0;
@@ -43,11 +42,11 @@ std::shared_ptr<ExamTTData> SCHC::run() {
                 ++stepsWithoutImprovement;
             }
             currentCost = candidateCost;
-            currentSolution_ = *candidate;
+            currentSolution_ = std::make_shared<ExamTTSolution>(*candidate);
             if (schc_acp)
                 ++stepCounter; // variant count accepting
         } else {
-            manipulator_->setData(std::make_shared<ExamTTData>(currentSolution_));
+            manipulator_->setSolution(currentSolution_);
             ++stepsWithoutImprovement;
         }
         if (schc_all)
@@ -65,22 +64,22 @@ std::shared_ptr<ExamTTData> SCHC::run() {
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
     std::cout << "Config: " << getConfig() << std::endl;
-    std::cout << (Evaluation::isFeasible(currentSolution_) ? "feasible" : "infeasible") << std::endl;
+    std::cout << (Evaluation::isFeasible(*currentSolution_) ? "feasible" : "infeasible") << std::endl;
     std::cout << "Cost: " << currentCost << " Time: " << duration.count() << std::endl;
     std::cout << "Total Steps: " << std::to_string(totalSteps) << " Idle Steps: "
               << std::to_string(stepsWithoutImprovement) << std::endl;
-    currentSolution_.cost = currentCost;
-    currentSolution_.runTime = duration.count();
-    currentSolution_.creationDateTime = DateTimeProvider::getDateTimeNow();
-    currentSolution_.costLimit = Evaluation::spreadCostLimit(currentSolution_);
-    currentSolution_.costAbove = Evaluation::spreadCostBeyond(currentSolution_);
-    currentSolution_.configuration = getConfig();
+    currentSolution_->cost = currentCost;
+    currentSolution_->runTime = duration.count();
+    currentSolution_->creationDateTime = DateTimeProvider::getDateTimeNow();
+    currentSolution_->costLimit = Evaluation::spreadCostLimit(*currentSolution_);
+    currentSolution_->costAbove = Evaluation::spreadCostBeyond(*currentSolution_);
+    currentSolution_->configuration = getConfig();
     // currentSolution_.costAndTimeLog = costAndTimeLog;
-    return std::make_shared<ExamTTData>(currentSolution_);
+    return currentSolution_;
 }
 
 std::string SCHC::getConfig() const {
-    std::string result = currentSolution_.dataSet + "_schc_";
+    std::string result = currentSolution_->examData->dataSet + "_schc_";
     if (schc_all)
         result += "all_";
     if (schc_acp)
@@ -240,22 +239,6 @@ bool SCHC::isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(const std::set<in
     if (manipulator_->hasAnyExamCollisionWithPeriod(exams, next))
         return true;
     return false;
-}
-
-int SCHC::calculateCost(const ExamTTData &examData) {
-    int cost = 0;
-    cost += Evaluation::spreadCost(examData);
-    cost += Evaluation::roomCost(examData);
-    cost += Evaluation::periodCost(examData);
-    return cost;
-}
-
-int SCHC::calculateAltCost(const ExamTTData &examData) {
-    int cost = 0;
-    cost += Evaluation::spreadCostLimit(examData);
-    cost += Evaluation::roomCost(examData);
-    cost += Evaluation::periodCost(examData);
-    return cost;
 }
 
 bool SCHC::notConverged() const {

@@ -2,10 +2,10 @@
 #include <future>
 #include "getUserInput.h"
 #include "Algorithm/SCHC.h"
-#include "data_utils/ExamTTFileManager.h"
 #include "Algorithm/InitialSolution.h"
 #include "screenOutput.h"
 #include "ExamDataLogger.h"
+#include "data_utils/ExamTTFileManager.h"
 
 int main() {
     // Number of maximum concurrent threads
@@ -16,9 +16,9 @@ int main() {
     // Logger will store all solutions
     ExamDataLogger logger;
     // Vector to hold the futures
-    std::vector<std::future<std::shared_ptr<ExamTTData>>> futures;
+    std::vector<std::future<std::shared_ptr<ExamTTSolution>>> futures;
 
-    std::cout << "Please select an *.accdb ExamTT file to importExamTTData." << std::endl;
+    std::cout << "Please select an *.accdb ExamTT file to import." << std::endl;
     // Open an Open-File-Dialog to get a file path from the user
     std::string filepath = openFileDialog();
     if (filepath.empty()) {
@@ -34,15 +34,12 @@ int main() {
         std::cout << "Failed to parse data, make sure the file " << filepath << " is not malformed or empty.\n";
         return 1;
     }
-
-    // Create an ExamDataManipulator that offers methods to create or change a solution
-    auto manipulator = std::make_shared<ExamDataManipulator>(examDataPtr);
-    // Create an Initial solution object that uses the ExamDataManipulator to create an initial solution
-    InitialSolution initialSolution(manipulator);
+    // Create an Initial solution_ object that uses the ExamTTSolutionManipulator to create an initial solution_
+    InitialSolution initialSolution(examDataPtr);
     initialSolution.random = true;
-    auto examData = initialSolution.build();
-    // The ExamTTData object now has an initial solution if any
-    if (examData == nullptr) {
+    auto solution = initialSolution.build();
+    // The ExamTTData object now has an initial solution_ if any
+    if (solution == nullptr) {
         std::cout << "Failed to build Initial Solution!" << std::endl;
         return 1;
     }
@@ -50,8 +47,7 @@ int main() {
     // Launch multiple threads
     for (int i = 0; i < num_threads; ++i) {
         std::cout << std::to_string(i) << std::endl;
-        auto examDataManipulator = std::make_shared<ExamDataManipulator>(std::make_shared<ExamTTData>(*examData));
-        auto algo = std::make_shared<SCHC>(examDataManipulator);
+        auto algo = std::make_shared<SCHC>(std::make_shared<ExamTTSolution>(solution->deepCopy()));
         algo->stopTime = 0.0;
         algo->random = true;
         algo->fullCollisionCost = true;
@@ -71,10 +67,10 @@ int main() {
             futures.clear();
         }
     }
-    // Get the best solution from a multiset sorted by cost asc
+    // Get the best solution_ from a multiset sorted by cost asc
     auto result = *logger.getData().begin();
-    // Export the solution to the original filepath the ExamTTData was created from
-    ExamTTFileManager::exportExamTTSolution(std::make_shared<ExamTTSolution>());
+    // Export the solution_ to the original filepath the ExamTTData was created from
+    ExamTTFileManager::exportExamTTSolution(result);
     logger.reset();
 
     return 0;

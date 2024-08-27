@@ -10,19 +10,20 @@
 #include <functional>
 #include <utility>
 #include "data_utils/ExamTTData.h"
-#include "ExamDataManipulator.h"
+#include "ExamTTSolutionManipulator.h"
 #include "CostLogger.h"
 
-/** Step-Counting-Hill-Climbing-Algorithm improves an initial solution with perturbative heuristics */
+/** Step-Counting-Hill-Climbing-Algorithm improves an initial solution_ with perturbative heuristics */
 class SCHC {
 public:
-    explicit SCHC(std::shared_ptr<ExamDataManipulator> examDataManipulator) :
-            manipulator_(std::move(examDataManipulator)), gen_(std::random_device{}()) {
+    explicit SCHC(const std::shared_ptr<ExamTTSolution>& solution) : gen_(std::random_device{}()) {
         std::random_device rd;
         gen_.seed(rd());
+        currentSolution_ = std::make_shared<ExamTTSolution>(*solution);
+        manipulator_ = std::make_shared<ExamTTSolutionManipulator>(solution);
     }
-    /** Executes the algorithm. Returns a shared_ptr to the last ExamTTData object with the best solution*/
-    std::shared_ptr<ExamTTData> run();
+    /** Executes the algorithm. Returns a shared_ptr to the last ExamTTData object with the best solution_*/
+    std::shared_ptr<ExamTTSolution> run();
     /** Returns the variation of the algorithm what steps to count, counterLimit and strategy for room assignment*/
     [[nodiscard]] std::string getConfig() const;
     /** Counts all feasible steps */
@@ -47,15 +48,15 @@ public:
     int fraction = 100;
     /** cost and time */
     std::vector<std::pair<int,double>> valueLog;
-    ExamTTData currentSolution_;
+    std::shared_ptr<ExamTTSolution> currentSolution_;
 private:
-    std::shared_ptr<ExamDataManipulator> manipulator_;
+    std::shared_ptr<ExamTTSolutionManipulator> manipulator_;
     std::mt19937 gen_;
     int stepsWithoutImprovement = 0;
     int totalSteps = 0;
     std::chrono::high_resolution_clock::time_point start;
 
-    /** A neighbourhood solution is created. Returns true if feasible*/
+    /** A neighbourhood solution_ is created. Returns true if feasible*/
     bool createCandidateSolution();
 
     /** a random exam is moved to random rooms within its period or all rooms in a period are reassigned best fit */
@@ -75,10 +76,6 @@ private:
     bool
     trySwap(const std::set<int> &displacedFirst, int periodSecond, const std::set<int> &displacedSecond,
             int periodFirst);
-
-    static int calculateCost(const ExamTTData &examData);
-
-    [[nodiscard]] static int calculateAltCost(const ExamTTData &examData);
 
     [[nodiscard]] bool notConverged() const;
 

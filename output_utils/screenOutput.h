@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include "data_utils/ExamTTData.h"
+#include "data_utils/ExamTTSolution.h"
 
 class screenOutput {
 public:
@@ -16,9 +17,9 @@ public:
     static void vectorOut(std::vector<int> vec, std::string name);
     static void vectorOut(std::vector<std::string> vec, std::string name);
     static void vectorOut(std::vector<std::vector<int>> vec, std::string name);
-    static void solutionOut(ExamTTData &data);
-    static void solutionDifference(const ExamTTData &data1, const ExamTTData &data2);
-    static void printExamData(ExamTTData &examData);
+    static void solutionOut(ExamTTSolution &data);
+    static void solutionDifference(const ExamTTSolution &data1, const ExamTTSolution &data2);
+    static void printExamData(ExamTTSolution &data);
 
     static void vectorOut(std::vector<std::set<int>> &vec, const std::string& name);
 

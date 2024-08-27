@@ -2,8 +2,8 @@
 // Created by hansk on 21.05.2024.
 //
 
-#ifndef STEP_COUNTING_HILL_CLIMBING_ALGORITHM_EXAMDATAMANIPULATOR_H
-#define STEP_COUNTING_HILL_CLIMBING_ALGORITHM_EXAMDATAMANIPULATOR_H
+#ifndef STEP_COUNTING_HILL_CLIMBING_ALGORITHM_EXAMTTSOLUTIONMANIPULATOR_H
+#define STEP_COUNTING_HILL_CLIMBING_ALGORITHM_EXAMTTSOLUTIONMANIPULATOR_H
 
 #include <set>
 #include <random>
@@ -12,12 +12,13 @@
 #include "data_utils/ExamTTSolution.h"
 
 /**
- * @class ExamDataManipulator
- * @brief Safely manipulates or creates a solution from an ExamTTData object.
+ * @class ExamTTSolutionManipulator
+ * @brief Safely manipulates or creates a solution_ from an ExamTTData object.
  */
-class ExamDataManipulator {
+class ExamTTSolutionManipulator {
 public:
-    explicit ExamDataManipulator(std::shared_ptr<ExamTTData> examData) : examData_(std::move(examData)), gen(std::random_device{}()) {
+    explicit ExamTTSolutionManipulator(
+            std::shared_ptr<ExamTTSolution> examTTSolution) : solution_(std::move(examTTSolution)), gen(std::random_device{}()) {
         std::random_device rd;
         gen.seed(rd());
     }
@@ -25,21 +26,21 @@ public:
     /**
      * @brief Set the Exam Data object
      *
-     * This function sets the examData_ member variable of the ExamDataManipulator class.
+     * This function sets the examData_ member variable of the ExamTTSolutionManipulator class.
      *
-     * @param examDataCurrent A shared pointer to an ExamTTData object
+     * @param solution A shared pointer to an ExamTTData object
      */
-    void setData(std::shared_ptr<ExamTTData> examDataCurrent);
+    void setSolution(const std::shared_ptr<ExamTTSolution>& solution);
 
     /**
-     * @fn std::shared_ptr<ExamTTData> ExamDataManipulator::getData()
+     * @fn std::shared_ptr<ExamTTData> ExamTTSolutionManipulator::getSolution()
      * @brief Retrieves the ExamTTData object.
      *
-     * This function returns a shared pointer to the ExamTTData object stored in the ExamDataManipulator class.
+     * This function returns a shared pointer to the ExamTTData object stored in the ExamTTSolutionManipulator class.
      *
      * @return A shared pointer to the ExamTTData object.
      */
-    [[nodiscard]] std::shared_ptr<ExamTTData> getData();
+    [[nodiscard]] std::shared_ptr<ExamTTSolution> getSolution();
 
     /**
         * @brief Get a random exam index.
@@ -310,7 +311,7 @@ public:
      *
      * @note If the period is -1, an empty set is returned.
      *
-     * @see ExamDataManipulator
+     * @see ExamTTSolutionManipulator
      */
     [[nodiscard]] std::set<int> getExamsInPeriod(const int &period) const;
 
@@ -410,8 +411,7 @@ public:
     std::set<int> getValidPeriodsForExams(const std::set<int> &exams);
 
 private:
-    std::shared_ptr<ExamTTSolution> solution;
-    std::shared_ptr<ExamTTData> examData_;
+    std::shared_ptr<ExamTTSolution> solution_;
     std::mt19937 gen;
 
     /**
@@ -484,4 +484,4 @@ private:
 };
 
 
-#endif //STEP_COUNTING_HILL_CLIMBING_ALGORITHM_EXAMDATAMANIPULATOR_H
+#endif //STEP_COUNTING_HILL_CLIMBING_ALGORITHM_EXAMTTSOLUTIONMANIPULATOR_H

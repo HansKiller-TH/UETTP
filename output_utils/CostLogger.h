@@ -14,7 +14,7 @@
 
 class CostLogger : ILogger {
 public:
-    void add(std::shared_ptr<ExamTTData> examData) override;
+    void add(std::shared_ptr<ExamTTSolution> solution) override;
     std::vector<std::vector<int>> getData();
 
     void writeToFile() override;

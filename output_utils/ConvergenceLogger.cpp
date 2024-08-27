@@ -5,8 +5,8 @@
 #include "ConvergenceLogger.h"
 #include "file_utils/TxtFileHandler.h"
 
-void ConvergenceLogger::add(std::shared_ptr<ExamTTData> examData) {
-    convergenceData.emplace_back(examData->costAndTimeLog);
+void ConvergenceLogger::add(std::shared_ptr<ExamTTSolution> solution) {
+    convergenceData.emplace_back(solution->costAndTimeLog);
 }
 
 std::vector<std::vector<std::pair<int, double>>> ConvergenceLogger::getData() {
