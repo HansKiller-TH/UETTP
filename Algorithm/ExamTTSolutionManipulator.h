@@ -30,7 +30,7 @@ public:
      *
      * @param solution A shared pointer to an ExamTTData object
      */
-    void setSolution(std::shared_ptr<ExamTTSolution> solution);
+    void setSolution(const std::shared_ptr<ExamTTSolution>& solution);
 
     /**
      * @fn std::shared_ptr<ExamTTData> ExamTTSolutionManipulator::getSolution()

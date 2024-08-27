@@ -13,7 +13,7 @@
 class ExamTTFileManager {
 public:
     static std::shared_ptr<ExamTTData> importExamTTData(const std::string &filepath);
-    static std::shared_ptr<ExamTTData> importExamTTSolution(std::shared_ptr<ExamTTData> examData, std::string &filename);
+    static std::shared_ptr<ExamTTSolution> importExamTTSolution(const std::shared_ptr<ExamTTData>& examData, std::string &filename);
     static void exportExamTTSolution(const std::shared_ptr<ExamTTSolution> &examTTSolution);
     static void exportExamTTSolution(const std::shared_ptr<ExamTTSolution> &examTTSolution, std::string &filePath);
 

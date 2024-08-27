@@ -61,7 +61,7 @@ void screenOutput::vectorOut(std::vector<ExamTTData::RoomType> &vec, const std::
     }
     std::cout << " l:" << std::to_string(vec.size()) << std::endl;
 }
-void screenOutput::solutionOut(ExamTTData &data) {
+void screenOutput::solutionOut(ExamTTSolution &data) {
     std::vector<std::pair<int, int>> indexedExamPeriod;
     for (size_t i = 0; i < data.examPeriod.size(); ++i) {
         indexedExamPeriod.emplace_back(data.examPeriod[i], i);
@@ -71,18 +71,18 @@ void screenOutput::solutionOut(ExamTTData &data) {
     for (const auto &pair: indexedExamPeriod) {
         int period = pair.first;
         int exam = pair.second;
-        std::cout << "exam:" << exam << " '" << data.examName.at(exam) << "', id:" << data.examID.at(exam);
+        std::cout << "exam:" << exam << " '" << data.examData->examName.at(exam) << "', id:" << data.examData->examID.at(exam);
         std::cout << ", period:" << period;
         if (period != -1) {
-            std::cout << ", day:" << data.periodDay.at(period);
-            std::cout << ", slot:" << data.periodSlot.at(period);
+            std::cout << ", day:" << data.examData->periodDay.at(period);
+            std::cout << ", slot:" << data.examData->periodSlot.at(period);
         }
         std::cout << std::endl;
-        std::cout << "size:" << data.examSize.at(exam);
+        std::cout << "size:" << data.examData->examSize.at(exam);
         std::cout << ", rooms: ";
         for (auto &roomIndex: data.examRooms.at(exam)) {
-            std::cout << "[" << std::to_string(roomIndex) << "]" << data.roomName.at(roomIndex) << "("
-                      << data.roomSize.at(roomIndex) << ") ";
+            std::cout << "[" << std::to_string(roomIndex) << "]" << data.examData->roomName.at(roomIndex) << "("
+                      << data.examData->roomSize.at(roomIndex) << ") ";
         }
         std::cout << std::endl;
     }
@@ -95,7 +95,7 @@ void screenOutput::solutionOut(ExamTTData &data) {
     std::cout << "Cost: " << Evaluation::calculateCost(data) << std::endl;
 }
 
-void screenOutput::solutionDifference(const ExamTTData &data1, const ExamTTData &data2) {
+void screenOutput::solutionDifference(const ExamTTSolution &data1, const ExamTTSolution &data2) {
     for (int exam = 0; exam < data1.examPeriod.size(); ++exam) {
         if (data1.examPeriod.at(exam) != data2.examPeriod.at(exam))
             std::cout << "Exam " << exam << " has different period: " << data1.examPeriod.at(exam) << " -> "
@@ -116,33 +116,33 @@ void screenOutput::solutionDifference(const ExamTTData &data1, const ExamTTData 
     }
 }
 
-void screenOutput::printExamData(ExamTTData &examData) {
-    std::cout << examData.filePath << std::endl;
-    std::cout << examData.timeStamp << std::endl;
-    vectorOut(examData.periodID,"periodID");
-    vectorOut(examData.periodDay,"periodDay");
-    vectorOut(examData.periodSlot, "periodSlot");
-    vectorOut(examData.periodWeek, "periodWeek");
-    vectorOut(examData.periodDate, "periodDate");
-    vectorOut(examData.roomID, "roomID");
-    vectorOut(examData.roomName, "roomName");
-    vectorOut(examData.roomSize, "roomSize");
-    vectorOut(examData.roomType, "roomType");
-    vectorOut(examData.roomPeriodsValidity, "roomPeriodsValidity");
-    vectorOut(examData.examID, "examID");
-    vectorOut(examData.examName, "examName");
-    vectorOut(examData.examSize, "examSize");
-    vectorOut(examData.examPeriodsValidity, "examPeriodsValidity");
-    vectorOut(examData.examRoomsValidity, "examRoomsValidity");
-    vectorOut(examData.enrollment, "enrollment");
-    vectorOut(examData.examsCollisions, "examsCollisions");
-    vectorOut(examData.examCollisionExams, "examCollisionExams");
-    vectorOut(examData.examSamePeriod, "examSamePeriod");
-    vectorOut(examData.examRooms, "examRooms");
-    vectorOut(examData.examPeriod, "examPeriod");
-    vectorOut(examData.periodRoomsAvailability, "periodRoomsAvailability");
-    vectorOut(examData.periodExamCollisions, "periodExamCollisions");
-    vectorOut(examData.periodExams, "periodExams");
-    vectorOut(examData.examDegreeOfSaturation, "examDegreeOfSaturation");
-    vectorOut(examData.examDegree, "examDegree");
+void screenOutput::printExamData(ExamTTSolution &data) {
+    std::cout << data.examData->filePath << std::endl;
+    std::cout << data.examData->timeStamp << std::endl;
+    vectorOut(data.examData->periodID, "periodID");
+    vectorOut(data.examData->periodDay, "periodDay");
+    vectorOut(data.examData->periodSlot, "periodSlot");
+    vectorOut(data.examData->periodWeek, "periodWeek");
+    vectorOut(data.examData->periodDate, "periodDate");
+    vectorOut(data.examData->roomID, "roomID");
+    vectorOut(data.examData->roomName, "roomName");
+    vectorOut(data.examData->roomSize, "roomSize");
+    vectorOut(data.examData->roomType, "roomType");
+    vectorOut(data.examData->roomPeriodsValidity, "roomPeriodsValidity");
+    vectorOut(data.examData->examID, "examID");
+    vectorOut(data.examData->examName, "examName");
+    vectorOut(data.examData->examSize, "examSize");
+    vectorOut(data.examData->examPeriodsValidity, "examPeriodsValidity");
+    vectorOut(data.examData->examRoomsValidity, "examRoomsValidity");
+    vectorOut(data.examData->enrollment, "enrollment");
+    vectorOut(data.examData->examsCollisions, "examsCollisions");
+    vectorOut(data.examData->examCollisionExams, "examCollisionExams");
+    vectorOut(data.examData->examSamePeriod, "examSamePeriod");
+    vectorOut(data.examRooms, "examRooms");
+    vectorOut(data.examPeriod, "examPeriod");
+    vectorOut(data.periodRoomsAvailability, "periodRoomsAvailability");
+    vectorOut(data.periodExamCollisions, "periodExamCollisions");
+    vectorOut(data.periodExams, "periodExams");
+    vectorOut(data.examDegreeOfSaturation, "examDegreeOfSaturation");
+    vectorOut(data.examData->examDegree, "examDegree");
 }

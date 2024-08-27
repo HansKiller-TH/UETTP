@@ -7,7 +7,7 @@
 #include "ExamTTFileManager.h"
 #include "ExamDataPopulator.h"
 #include "ExamDataParserFactory.h"
-#include "Algorithm/ExamDataManipulator.h"
+#include "Algorithm/ExamTTSolutionManipulator.h"
 #include "vectorUtils/VectorUtils.h"
 #include "file_utils/AccdbFileHandler.h"
 
@@ -40,33 +40,34 @@ std::shared_ptr<ExamTTData> ExamTTFileManager::importExamTTData(const std::strin
     return std::move(examData);
 }
 
-std::shared_ptr<ExamTTData>
-ExamTTFileManager::importExamTTSolution(std::shared_ptr<ExamTTData> examData, std::string &filename) {
-    ExamDataManipulator manipulator(examData);
+std::shared_ptr<ExamTTSolution>
+ExamTTFileManager::importExamTTSolution(const std::shared_ptr<ExamTTData>& examData, std::string &filename) {
+    auto solution = std::make_shared<ExamTTSolution>(examData);
+    ExamTTSolutionManipulator manipulator(solution);
     auto parser = ExamDataParserFactory::createParser(filename);
     for (const auto &row: parser->parseSolutionExamPeriod()) {
-        int examIndex = VectorUtils::indexForValue(examData->examID, row.at(0));
+        int examIndex = VectorUtils::indexForValue(solution->examData->examID, row.at(0));
         if (examIndex == -1)
             continue;
-        int periodIndex = VectorUtils::indexForValue(examData->periodID, row.at(1));
+        int periodIndex = VectorUtils::indexForValue(solution->examData->periodID, row.at(1));
         if (periodIndex == -1)
             continue;
         manipulator.moveExamToPeriod(examIndex, periodIndex);
     }
     for (const auto &row: parser->parseSolutionExamRooms()) {
-        int examIndex = VectorUtils::indexForValue(examData->examID, row.at(0));
+        int examIndex = VectorUtils::indexForValue(solution->examData->examID, row.at(0));
         if (examIndex == -1)
             continue;
-        int roomIndex = VectorUtils::indexForValue(examData->roomID, row.at(1));
+        int roomIndex = VectorUtils::indexForValue(solution->examData->roomID, row.at(1));
         if (roomIndex == -1)
             continue;
 
-        int periodIndex = examData->examPeriod.at(examIndex);
+        int periodIndex = solution->examPeriod.at(examIndex);
 
-        if (examData->periodRoomsAvailability.at(periodIndex).at(roomIndex) == -1) {
-            std::cout << "period: " << std::to_string(examData->periodID.at(periodIndex)) << ", exam: "
-                      << std::to_string(examData->examID.at(examIndex)) << ", room: "
-                      << std::to_string(examData->roomID.at(roomIndex)) << std::endl;
+        if (solution->periodRoomsAvailability.at(periodIndex).at(roomIndex) == -1) {
+            std::cout << "period: " << std::to_string(solution->examData->periodID.at(periodIndex)) << ", exam: "
+                      << std::to_string(solution->examData->examID.at(examIndex)) << ", room: "
+                      << std::to_string(solution->examData->roomID.at(roomIndex)) << std::endl;
             throw std::runtime_error("tried assigning an invalid room");
         }
         // Practical Solution allows for very small exam sizes to be placed in the same room with another exam by the same lecturer
@@ -76,11 +77,11 @@ ExamTTFileManager::importExamTTSolution(std::shared_ptr<ExamTTData> examData, st
                       << std::to_string(examData->roomID.at(roomIndex)) << std::endl;
             throw std::runtime_error("tried assigning an unavailable room");
         }*/
-        if (examData->roomType.at(roomIndex) != ExamTTData::RoomType::Online)
-            examData->periodRoomsAvailability.at(periodIndex).at(roomIndex) = 0;
-        examData->examRooms.at(examIndex).insert(roomIndex);
+        if (solution->examData->roomType.at(roomIndex) != ExamTTData::RoomType::Online)
+            solution->periodRoomsAvailability.at(periodIndex).at(roomIndex) = 0;
+        solution->examRooms.at(examIndex).insert(roomIndex);
     }
-    return examData;
+    return solution;
 }
 
 void ExamTTFileManager::exportExamTTSolution(const std::shared_ptr<ExamTTSolution> &examTTSolution) {

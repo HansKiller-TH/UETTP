@@ -19,11 +19,11 @@ public:
     explicit SCHC(const std::shared_ptr<ExamTTSolution>& solution) : gen_(std::random_device{}()) {
         std::random_device rd;
         gen_.seed(rd());
-        currentSolution_ = *solution;
+        currentSolution_ = std::make_shared<ExamTTSolution>(*solution);
         manipulator_ = std::make_shared<ExamTTSolutionManipulator>(solution);
     }
     /** Executes the algorithm. Returns a shared_ptr to the last ExamTTData object with the best solution_*/
-    std::shared_ptr<ExamTTData> run();
+    std::shared_ptr<ExamTTSolution> run();
     /** Returns the variation of the algorithm what steps to count, counterLimit and strategy for room assignment*/
     [[nodiscard]] std::string getConfig() const;
     /** Counts all feasible steps */
@@ -48,7 +48,7 @@ public:
     int fraction = 100;
     /** cost and time */
     std::vector<std::pair<int,double>> valueLog;
-    ExamTTSolution currentSolution_;
+    std::shared_ptr<ExamTTSolution> currentSolution_;
 private:
     std::shared_ptr<ExamTTSolutionManipulator> manipulator_;
     std::mt19937 gen_;
@@ -76,10 +76,6 @@ private:
     bool
     trySwap(const std::set<int> &displacedFirst, int periodSecond, const std::set<int> &displacedSecond,
             int periodFirst);
-
-    static int calculateCost(const ExamTTData &examData);
-
-    [[nodiscard]] static int calculateAltCost(const ExamTTData &examData);
 
     [[nodiscard]] bool notConverged() const;
 

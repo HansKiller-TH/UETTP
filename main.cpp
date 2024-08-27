@@ -2,14 +2,10 @@
 #include <future>
 #include "getUserInput.h"
 #include "Algorithm/SCHC.h"
-#include "data_utils/ExamTTDataImporter.h"
 #include "Algorithm/InitialSolution.h"
 #include "screenOutput.h"
-#include "ConvergenceLogger.h"
 #include "ExamDataLogger.h"
-#include "data_utils/ExamTTSolutionImporter.h"
-#include "Algorithm/Evaluation.h"
-#include "data_utils/ExamTTSolutionAccdbExporter.h"
+#include "data_utils/ExamTTFileManager.h"
 
 int main() {
     // Number of maximum concurrent threads
@@ -20,7 +16,7 @@ int main() {
     // Logger will store all solutions
     ExamDataLogger logger;
     // Vector to hold the futures
-    std::vector<std::future<std::shared_ptr<ExamTTData>>> futures;
+    std::vector<std::future<std::shared_ptr<ExamTTSolution>>> futures;
 
     std::cout << "Please select an *.accdb ExamTT file to import." << std::endl;
     // Open an Open-File-Dialog to get a file path from the user
@@ -33,7 +29,7 @@ int main() {
     std::cout << filepath << std::endl;
 
     // From the file parse the data into an ExamTTData object
-    auto examDataPtr = ExamTTDataImporter::import(filepath);
+    auto examDataPtr = ExamTTFileManager::importExamTTData(filepath);
     if (!examDataPtr) {
         std::cout << "Failed to parse data, make sure the file " << filepath << " is not malformed or empty.\n";
         return 1;
@@ -74,7 +70,7 @@ int main() {
     // Get the best solution_ from a multiset sorted by cost asc
     auto result = *logger.getData().begin();
     // Export the solution_ to the original filepath the ExamTTData was created from
-    ExamTTSolutionAccdbExporter::exportExamTTSolution(result);
+    ExamTTFileManager::exportExamTTSolution(result);
     logger.reset();
 
     return 0;

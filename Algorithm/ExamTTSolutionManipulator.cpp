@@ -10,8 +10,8 @@
 #include "screenOutput.h"
 
 
-void ExamTTSolutionManipulator::setSolution(std::shared_ptr<ExamTTSolution> solution) {
-    this->solution_ = solution;
+void ExamTTSolutionManipulator::setSolution(const std::shared_ptr<ExamTTSolution>& solution) {
+    this->solution_ = std::make_shared<ExamTTSolution>(*solution);
 }
 
 std::shared_ptr<ExamTTSolution> ExamTTSolutionManipulator::getSolution() {
