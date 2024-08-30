@@ -95,7 +95,7 @@ std::set<int> ExamTTSolutionManipulator::removeLargestExam(std::set<int> &unsche
         return {};
     int limit = 0;
     for (int i = 0; i < solution_->examData->roomType.size(); ++i) {
-        if (solution_->examData->roomType.at(i) == ExamTTData::RoomType::Normal)
+        if (solution_->examData->roomType.at(i) == RoomType::Normal)
             limit += solution_->examData->roomSize.at(i);
     }
     int exam = 0;

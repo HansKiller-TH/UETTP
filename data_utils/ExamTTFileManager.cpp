@@ -5,7 +5,7 @@
 #include <iostream>
 #include <filesystem>
 #include "ExamTTFileManager.h"
-#include "ExamDataPopulator.h"
+#include "ExamTTDataBuilder.h"
 #include "ExamDataParserFactory.h"
 #include "Algorithm/ExamTTSolutionManipulator.h"
 #include "vectorUtils/VectorUtils.h"
@@ -13,31 +13,18 @@
 
 std::shared_ptr<ExamTTData> ExamTTFileManager::importExamTTData(const std::string &filepath) {
     std::cout << "Importing..." << std::endl;
-    //std::cout << "Creating ExamTTData..." << std::endl;
-    auto examData = std::make_shared<ExamTTData>();
-    ExamDataPopulator examDataPopulator(examData);
     auto parser = ExamDataParserFactory::createParser(filepath);
-    // methods that handle a combination of Data depend on the methods that process those Data being called beforehand
-    examDataPopulator.processPeriods(parser->parsePeriods());
-    examDataPopulator.processRooms(parser->parseRooms());
-    // depends on parsePeriods and parseRooms be called beforehand
-    examDataPopulator.processRoomsValidPeriods(parser->parseRoomsValidPeriods());
-    examDataPopulator.processExams(parser->parseExams());
-    // depends on parsePeriods and parseExams be called beforehand
-    examDataPopulator.processExamValidPeriods(parser->parseExamsValidPeriods());
-    // depends on parseExams and parseRooms be called beforehand
-    examDataPopulator.processExamsValidRooms(parser->parseExamsValidRooms());
-    // depends on parseExams be called beforehand
-    examDataPopulator.processStudentsExams(parser->parseStudentsExams());
-    // depends on parseExams be called beforehand
-    examDataPopulator.processSamePeriods(parser->parseSamePeriod());
-    // depends on parseExams be called beforehand
-    examDataPopulator.createCollisionsFromEnrollment();
-    examDataPopulator.createCollisionMatrixLimitEnrolment();
-    // depends on parsePeriods and parseExams be called beforehand
-    // examDataPopulator.setUpSolutionDependentData();
-    examData->setMeta(filepath);
-    return std::move(examData);
+    ExamTTDataBuilder examTTDataBuilder;
+    return examTTDataBuilder.processPeriods(parser->parsePeriods())
+    .processRooms(parser->parseRooms())
+    .processRoomsValidPeriods(parser->parseRoomsValidPeriods())
+    .processExams(parser->parseExams())
+    .processExamValidPeriods(parser->parseExamsValidPeriods())
+    .processExamsValidRooms(parser->parseExamsValidRooms())
+    .processStudentsExams(parser->parseStudentsExams())
+    .processSamePeriods(parser->parseSamePeriod())
+    .createCollisionsFromEnrollment()
+    .build();
 }
 
 std::shared_ptr<ExamTTSolution>
@@ -77,7 +64,7 @@ ExamTTFileManager::importExamTTSolution(const std::shared_ptr<ExamTTData>& examD
                       << std::to_string(examData->roomID.at(roomIndex)) << std::endl;
             throw std::runtime_error("tried assigning an unavailable room");
         }*/
-        if (solution->examData->roomType.at(roomIndex) != ExamTTData::RoomType::Online)
+        if (solution->examData->roomType.at(roomIndex) != RoomType::Online)
             solution->periodRoomsAvailability.at(periodIndex).at(roomIndex) = 0;
         solution->examRooms.at(examIndex).insert(roomIndex);
     }
@@ -88,7 +75,7 @@ void ExamTTFileManager::exportExamTTSolution(const std::shared_ptr<ExamTTSolutio
     exportExamTTSolution(examTTSolution, examTTSolution->examData->filePath);
 }
 
-void ExamTTFileManager::exportExamTTSolution(const std::shared_ptr<ExamTTSolution> &examTTSolution, std::string &filePath) {
+void ExamTTFileManager::exportExamTTSolution(const std::shared_ptr<ExamTTSolution> &examTTSolution, const std::string &filePath) {
     AccdbFileHandler fh(filePath);
     // fh.clearTable("Pruefungseinheit");
     // fh.clearTable("Pruefungstermin");

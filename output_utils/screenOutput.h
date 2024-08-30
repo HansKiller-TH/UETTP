@@ -10,6 +10,7 @@
 #include <string>
 #include "data_utils/ExamTTData.h"
 #include "data_utils/ExamTTSolution.h"
+#include "data_utils/RoomType.h"
 
 class screenOutput {
 public:
@@ -21,9 +22,9 @@ public:
     static void solutionDifference(const ExamTTSolution &data1, const ExamTTSolution &data2);
     static void printExamData(ExamTTSolution &data);
 
-    static void vectorOut(std::vector<std::set<int>> &vec, const std::string& name);
+    static void vectorOut(const std::vector<std::set<int>> &vec, const std::string& name);
 
-    static void vectorOut(std::vector<ExamTTData::RoomType> &vec, const std::string &name);
+    static void vectorOut(const std::vector<RoomType> &vec, const std::string &name);
 };
 
 

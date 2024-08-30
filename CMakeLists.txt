@@ -37,8 +37,8 @@ add_library(${PROJECT_NAME}-lib STATIC
         vectorUtils/VectorUtils.h
         Algorithm/ExamTTSolutionManipulator.cpp
         Algorithm/ExamTTSolutionManipulator.h
-        data_utils/ExamDataPopulator.cpp
-        data_utils/ExamDataPopulator.h
+        data_utils/ExamTTDataBuilder.cpp
+        data_utils/ExamTTDataBuilder.h
         data_utils/ExamDataParserFactory.cpp
         data_utils/ExamDataParserFactory.h
         data_utils/ExamTTFileManager.cpp
@@ -53,6 +53,8 @@ add_library(${PROJECT_NAME}-lib STATIC
         output_utils/ILogger.h
         output_utils/ConvergenceLogger.cpp
         output_utils/ConvergenceLogger.h
+        data_utils/ExamTTDataTMP.h
+        data_utils/RoomType.h
 )
 
 add_executable(step_counting_hill_climbing_algorithm main.cpp)
