@@ -6,7 +6,7 @@
 #define STEP_COUNTING_HILL_CLIMBING_ALGORITHM_IEXAMDATAPARSER_H
 
 #include "ExamTTData.h"
-#include "ExamDataPopulator.h"
+#include "ExamTTDataBuilder.h"
 
 class IExamDataParser {
 public:

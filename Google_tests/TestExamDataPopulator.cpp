@@ -3,7 +3,7 @@
 //
 #include <gtest/gtest.h>
 #include "data_utils/ExamTTData.h"
-#include "data_utils/ExamDataPopulator.h"
+#include "data_utils/ExamTTDataBuilder.h"
 
 class ExamDataPopulatorTest : public ::testing::Test {
 protected:

@@ -52,9 +52,9 @@ int Evaluation::spreadCost(const ExamTTSolution &data) {
 }
 int Evaluation::spreadCostLimit(const ExamTTSolution &data) {
     int cost = 0;
-    for (int exam = 0; exam < data.examData->examsCollisionsLimit7.size(); ++exam) {
-        for (int otherEx = exam + 1; otherEx < data.examData->examsCollisionsLimit7.size(); ++otherEx) {
-            int collAmount = data.examData->examsCollisionsLimit7.at(exam).at(otherEx);
+    for (int exam = 0; exam < data.examData->examsCollisionsLimit.at(7).size(); ++exam) {
+        for (int otherEx = exam + 1; otherEx < data.examData->examsCollisionsLimit.at(7).size(); ++otherEx) {
+            int collAmount = data.examData->examsCollisionsLimit.at(7).at(exam).at(otherEx);
             if (collAmount < 1)
                 continue;
             int examDay = data.examData->periodDay.at(data.examPeriod.at(exam));
@@ -70,9 +70,9 @@ int Evaluation::spreadCostLimit(const ExamTTSolution &data) {
 
 int Evaluation::spreadCostBeyond(const ExamTTSolution &data) {
     int cost = 0;
-    for (int exam = 0; exam < data.examData->examsCollisionsBeyond7.size(); ++exam) {
-        for (int otherEx = exam + 1; otherEx < data.examData->examsCollisionsBeyond7.size(); ++otherEx) {
-            int collAmount = data.examData->examsCollisionsBeyond7.at(exam).at(otherEx);
+    for (int exam = 0; exam < data.examData->examsCollisionsAbove.at(7).size(); ++exam) {
+        for (int otherEx = exam + 1; otherEx < data.examData->examsCollisionsAbove.at(7).size(); ++otherEx) {
+            int collAmount = data.examData->examsCollisionsAbove.at(7).at(exam).at(otherEx);
             if (collAmount < 1)
                 continue;
             int examDay = data.examData->periodDay.at(data.examPeriod.at(exam));
@@ -104,7 +104,7 @@ int Evaluation::roomCost(const ExamTTSolution &data) {
         for (auto &room: data.examRooms.at(exam)) {
             // Scarce external rooms must be used when available regardless of weekday and
             // thus these or any other rooms occupied by that exam mustn't be penalized
-            if (data.examData->roomType.at(room) == ExamTTData::RoomType::External) {
+            if (data.examData->roomType.at(room) == RoomType::External) {
                 tmp = 0;
                 break;
             }

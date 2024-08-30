@@ -42,7 +42,7 @@ void screenOutput::vectorOut(std::vector<std::vector<int>> vec, std::string name
     }
     std::cout << " lO:" << std::to_string(vec.size()) << std::endl;
 }
-void screenOutput::vectorOut(std::vector<std::set<int>> &vec, const std::string& name) {
+void screenOutput::vectorOut(const std::vector<std::set<int>> &vec, const std::string& name) {
     std::cout << name << std::endl;
     for (const auto &row: vec) {
         for (auto line: row) {
@@ -53,7 +53,7 @@ void screenOutput::vectorOut(std::vector<std::set<int>> &vec, const std::string&
     }
     std::cout << " lO:" << std::to_string(vec.size()) << std::endl;
 }
-void screenOutput::vectorOut(std::vector<ExamTTData::RoomType> &vec, const std::string& name) {
+void screenOutput::vectorOut(const std::vector<RoomType> &vec, const std::string& name) {
     std::cout << name << std::endl;
     for (const auto &row: vec) {
             std::cout << std::to_string((int)row) << " ";
