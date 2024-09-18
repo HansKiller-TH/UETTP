@@ -63,6 +63,18 @@ struct ExamTTSolution {
         return *this;
     }
 
+    /*bool operator==(const ExamTTSolution& other) const {
+        return true;
+        return examPeriod == other.examPeriod &&
+               examRooms == other.examRooms &&
+               periodRoomsAvailability == other.periodRoomsAvailability &&
+               periodExamCollisions == other.periodExamCollisions &&
+               periodExams == other.periodExams &&
+               creationDateTime == other.creationDateTime &&
+               costAndTimeLog == other.costAndTimeLog &&
+               configuration == other.configuration;
+    }*/
+
     [[nodiscard]] ExamTTSolution deepCopy() const{
         return {*this, true};
     }

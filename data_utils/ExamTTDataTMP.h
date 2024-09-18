@@ -38,6 +38,34 @@ struct ExamTTDataTMP {
     std::optional<std::vector<std::set<int>>> examSamePeriod;
     std::optional<std::vector<std::vector<std::vector<int>>>> examsCollisionsLimit;
     std::optional<std::vector<std::vector<std::vector<int>>>> examsCollisionsAbove;
+
+    ExamTTDataTMP() {
+        filePath = std::string();
+        timeStamp = std::string();
+        dataSet = std::string();
+        periodID = std::vector<int>();
+        periodDay = std::vector<int>();
+        periodSlot = std::vector<int>();
+        periodWeek = std::vector<int>();
+        periodDate = std::vector<std::string>();
+        roomID = std::vector<int>();
+        roomName = std::vector<std::string>();
+        roomSize = std::vector<int>();
+        roomType = std::vector<RoomType>();
+        roomPeriodsValidity = std::vector<std::vector<int>>();
+        examID = std::vector<int>();
+        examName = std::vector<std::string>();
+        examSize = std::vector<int>();
+        examPeriodsValidity = std::vector<std::vector<int>>();
+        examRoomsValidity = std::vector<std::vector<int>>();
+        enrollment = std::vector<std::set<int>>();
+        examsCollisions = std::vector<std::vector<int>>();
+        examCollisionExams = std::vector<std::set<int>>();
+        examDegree = std::vector<int>();
+        examSamePeriod = std::vector<std::set<int>>();
+        examsCollisionsLimit = std::vector<std::vector<std::vector<int>>>();
+        examsCollisionsAbove = std::vector<std::vector<std::vector<int>>>();
+    }
 };
 
 

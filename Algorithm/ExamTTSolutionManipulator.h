@@ -17,6 +17,11 @@
  */
 class ExamTTSolutionManipulator {
 public:
+    ExamTTSolutionManipulator():gen(std::random_device{}()) {
+        std::random_device rd;
+        gen.seed(rd());
+    }
+
     explicit ExamTTSolutionManipulator(
             std::shared_ptr<ExamTTSolution> examTTSolution) : solution_(std::move(examTTSolution)), gen(std::random_device{}()) {
         std::random_device rd;

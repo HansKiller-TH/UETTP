@@ -16,7 +16,7 @@
 
 class ExamTTDataBuilder {
 public:
-    ExamTTDataBuilder() = default;
+    ExamTTDataBuilder() : tmp() {}
     ExamTTDataBuilder processPeriods(const std::vector<std::vector<std::string>> &periods);
     ExamTTDataBuilder processRooms(const std::vector<std::vector<std::string>> &rooms);
     ExamTTDataBuilder processRoomsValidPeriods(const std::vector<std::vector<std::string>> &roomsPeriods);
@@ -35,8 +35,8 @@ public:
     void processSolutionExamRooms(const std::vector<std::vector<std::string>> &examRooms);*/
 
     std::shared_ptr<ExamTTData> build();
-private:
     ExamTTDataTMP tmp;
+private:
     /*std::optional<std::string> filePath;
     std::optional<std::string> timeStamp;
     std::optional<std::string> dataSet;

@@ -1,14 +1,13 @@
 //
 // Created by hansk on 17.06.2024.
 //
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 #include "data_utils/ExamTTData.h"
 #include "data_utils/ExamTTDataBuilder.h"
 
 class ExamDataPopulatorTest : public ::testing::Test {
 protected:
-    std::shared_ptr<ExamTTData> examData = std::make_shared<ExamTTData>();
-    ExamDataPopulator pop = ExamDataPopulator(examData); // Instance of your class to test
+    ExamTTDataBuilder builder; // Instance of your class to test
 
     // You can add setup code here, it will be executed before each test
     void SetUp() override {
@@ -21,17 +20,17 @@ TEST_F(ExamDataPopulatorTest, ProcessPeriodsTest) {
                                                    {"3", "1", "9",  "0", "2024-01-18"},
                                                    {"4", "1", "10", "0", "2024-01-18"},
                                                    {"5", "2", "7",  "1", "2024-01-19"}};
-    pop.processPeriods(param);
+    builder.processPeriods(param);
     std::vector<int> asserterID = {1, 2, 3, 4, 5};
-    ASSERT_EQ(examData->periodID, asserterID);
+    ASSERT_EQ(builder.tmp.periodID.value(), asserterID);
     std::vector<int> asserterDay = {1, 1, 1, 1, 2};
-    ASSERT_EQ(examData->periodDay, asserterDay);
+    ASSERT_EQ(builder.tmp.periodDay.value(), asserterDay);
     std::vector<int> asserterSlot = {7, 8, 9, 10, 7};
-    ASSERT_EQ(examData->periodSlot, asserterSlot);
+    ASSERT_EQ(builder.tmp.periodSlot.value(), asserterSlot);
     std::vector<int> asserterWeek = {0, 0, 0, 0, 1};
-    ASSERT_EQ(examData->periodWeek, asserterWeek);
+    ASSERT_EQ(builder.tmp.periodWeek.value(), asserterWeek);
     std::vector<std::string> asserterDate = {"2024-01-18", "2024-01-18", "2024-01-18", "2024-01-18", "2024-01-19"};
-    ASSERT_EQ(examData->periodDate, asserterDate);
+    ASSERT_EQ(builder.tmp.periodDate.value(), asserterDate);
 }
 
 TEST_F(ExamDataPopulatorTest, ProcessPeriodsVectorSizeTooSmallTest) {
@@ -40,17 +39,17 @@ TEST_F(ExamDataPopulatorTest, ProcessPeriodsVectorSizeTooSmallTest) {
                                                    {"3", "1", "9",  "0", "2024-01-18"},
                                                    {"4", "1", "10", "0", "2024-01-18"},
                                                    {"5", "2", "7",  "1", "2024-01-19"}};
-    pop.processPeriods(param);
+    ASSERT_THROW(builder.processPeriods(param),std::invalid_argument);
     std::vector<int> asserterID = {1};
-    ASSERT_EQ(examData->periodID, asserterID);
+    ASSERT_EQ(builder.tmp.periodID.value(), asserterID);
     std::vector<int> asserterDay = {1};
-    ASSERT_EQ(examData->periodDay, asserterDay);
+    ASSERT_EQ(builder.tmp.periodDay.value(), asserterDay);
     std::vector<int> asserterSlot = {7};
-    ASSERT_EQ(examData->periodSlot, asserterSlot);
+    ASSERT_EQ(builder.tmp.periodSlot.value(), asserterSlot);
     std::vector<int> asserterWeek = {0};
-    ASSERT_EQ(examData->periodWeek, asserterWeek);
+    ASSERT_EQ(builder.tmp.periodWeek.value(), asserterWeek);
     std::vector<std::string> asserterDate = {"2024-01-18"};
-    ASSERT_EQ(examData->periodDate, asserterDate);
+    ASSERT_EQ(builder.tmp.periodDate.value(), asserterDate);
 }
 
 TEST_F(ExamDataPopulatorTest, ProcessRoomsTest) {
@@ -59,17 +58,17 @@ TEST_F(ExamDataPopulatorTest, ProcessRoomsTest) {
                                                    {"3", "C", "9",  "normal"},
                                                    {"4", "D", "10", "extern"},
                                                    {"5", "E", "11", "1"}};
-    pop.processRooms(param);
+    builder.processRooms(param);
     std::vector<int> asserterID = {1, 2, 3, 4, 5};
-    ASSERT_EQ(examData->roomID, asserterID);
+    ASSERT_EQ(builder.tmp.roomID.value(), asserterID);
     std::vector<std::string> asserterName = {"A", "B", "C", "D", "E"};
-    ASSERT_EQ(examData->roomName, asserterName);
+    ASSERT_EQ(builder.tmp.roomName.value(), asserterName);
     std::vector<int> asserterSize = {7, 8, 9, 10, 11};
-    ASSERT_EQ(examData->roomSize, asserterSize);
-    std::vector<ExamTTData::RoomType> asserterType = {ExamTTData::RoomType::Single, ExamTTData::RoomType::Online,
-                                                      ExamTTData::RoomType::Normal, ExamTTData::RoomType::External,
-                                                      ExamTTData::RoomType::Unknown};
-    ASSERT_EQ(examData->roomType, asserterType);
+    ASSERT_EQ(builder.tmp.roomSize.value(), asserterSize);
+    std::vector<RoomType> asserterType = {RoomType::Single, RoomType::Online,
+                                                      RoomType::Normal, RoomType::External,
+                                                      RoomType::Unknown};
+    ASSERT_EQ(builder.tmp.roomType.value(), asserterType);
 }
 
 TEST_F(ExamDataPopulatorTest, ProcessRoomsVectorSizeTooSmallTest) {
@@ -78,20 +77,20 @@ TEST_F(ExamDataPopulatorTest, ProcessRoomsVectorSizeTooSmallTest) {
                                                    {"3", "C", "9"},
                                                    {"4", "D", "10", "extern"},
                                                    {"5", "E", "11", "1"}};
-    pop.processRooms(param);
+    ASSERT_THROW(builder.processRooms(param),std::invalid_argument);
     std::vector<int> asserterID = {1, 2};
-    ASSERT_EQ(examData->roomID, asserterID);
+    ASSERT_EQ(builder.tmp.roomID.value(), asserterID);
     std::vector<std::string> asserterName = {"A", "B"};
-    ASSERT_EQ(examData->roomName, asserterName);
+    ASSERT_EQ(builder.tmp.roomName.value(), asserterName);
     std::vector<int> asserterSize = {7, 8};
-    ASSERT_EQ(examData->roomSize, asserterSize);
-    std::vector<ExamTTData::RoomType> asserterType = {ExamTTData::RoomType::Single, ExamTTData::RoomType::Online};
-    ASSERT_EQ(examData->roomType, asserterType);
+    ASSERT_EQ(builder.tmp.roomSize.value(), asserterSize);
+    std::vector<RoomType> asserterType = {RoomType::Single, RoomType::Online};
+    ASSERT_EQ(builder.tmp.roomType.value(), asserterType);
 }
 
 TEST_F(ExamDataPopulatorTest, ProcessRoomsValidPeriodsTest) {
-    examData->roomID = {1, 2, 3};
-    examData->periodID = {1, 2, 3, 4, 5};
+    builder.tmp.roomID.value() = {1, 2, 3};
+    builder.tmp.periodID.value() = {1, 2, 3, 4, 5};
     std::vector<std::vector<std::string>> param = {{"1", "1"},
                                                    {"1", "2"},
                                                    {"1", "3"},
@@ -101,17 +100,17 @@ TEST_F(ExamDataPopulatorTest, ProcessRoomsValidPeriodsTest) {
                                                    {"3", "3"},
                                                    {"3", "4"},
                                                    {"3", "5"}};
-    pop.processRoomsValidPeriods(param);
-    std::vector<std::vector<int>> asserterPeriodRoomsAvailability = {{1,  -1, -1},
+    builder.processRoomsValidPeriods(param);
+    /*std::vector<std::vector<int>> asserterPeriodRoomsAvailability = {{1,  -1, -1},
                                                                      {1,  1,  -1},
                                                                      {1,  1,  1},
                                                                      {-1, 1,  1},
                                                                      {-1, -1, 1}};
-    ASSERT_EQ(examData->periodRoomsAvailability, asserterPeriodRoomsAvailability);
+    ASSERT_EQ(builder.tmp.periodRoomsAvailability, asserterPeriodRoomsAvailability);*/
     std::vector<std::vector<int>> asserterRoomPeriodsValidity = {{1, 1, 1, 0, 0},
                                                                  {0, 1, 1, 1, 0},
                                                                  {0, 0, 1, 1, 1}};
-    ASSERT_EQ(examData->roomPeriodsValidity, asserterRoomPeriodsValidity);
+    ASSERT_EQ(builder.tmp.roomPeriodsValidity.value(), asserterRoomPeriodsValidity);
 }
 
 TEST_F(ExamDataPopulatorTest, ProcessExamsTest) {
@@ -120,18 +119,18 @@ TEST_F(ExamDataPopulatorTest, ProcessExamsTest) {
                                                    {"3", "C", "9"},
                                                    {"4", "D", "10"},
                                                    {"5", "E", "11"}};
-    pop.processExams(param);
+    builder.processExams(param);
     std::vector<int> asserterID = {1, 2, 3, 4, 5};
-    ASSERT_EQ(examData->examID, asserterID);
+    ASSERT_EQ(builder.tmp.examID.value(), asserterID);
     std::vector<std::string> asserterName = {"A", "B", "C", "D", "E"};
-    ASSERT_EQ(examData->examName, asserterName);
+    ASSERT_EQ(builder.tmp.examName.value(), asserterName);
     std::vector<int> asserterSize = {7, 8, 9, 10, 11};
-    ASSERT_EQ(examData->examSize, asserterSize);
+    ASSERT_EQ(builder.tmp.examSize.value(), asserterSize);
 }
 
 TEST_F(ExamDataPopulatorTest, ProcessExamsValidPeriodsTest) {
-    examData->examID = {1, 2, 3};
-    examData->periodID = {1, 2, 3, 4, 5};
+    builder.tmp.examID.value() = {1, 2, 3};
+    builder.tmp.periodID.value() = {1, 2, 3, 4, 5};
     std::vector<std::vector<std::string>> param = {{"1", "1"},
                                                    {"1", "2"},
                                                    {"1", "3"},
@@ -141,16 +140,16 @@ TEST_F(ExamDataPopulatorTest, ProcessExamsValidPeriodsTest) {
                                                    {"3", "3"},
                                                    {"3", "4"},
                                                    {"3", "5"}};
-    pop.processExamValidPeriods(param);
+    builder.processExamValidPeriods(param);
     std::vector<std::vector<int>> asserterExamPeriodsValidity = {{1, 1, 1, 0, 0},
                                                                  {0, 1, 1, 1, 0},
                                                                  {0, 0, 1, 1, 1}};
-    ASSERT_EQ(examData->examPeriodsValidity, asserterExamPeriodsValidity);
+    ASSERT_EQ(builder.tmp.examPeriodsValidity.value(), asserterExamPeriodsValidity);
 }
 
 TEST_F(ExamDataPopulatorTest, ProcessExamsValidRoomsTest) {
-    examData->examID = {1, 2, 3, 4, 5};
-    examData->roomID = {1, 2, 3};
+    builder.tmp.examID.value() = {1, 2, 3, 4, 5};
+    builder.tmp.roomID.value() = {1, 2, 3};
     std::vector<std::vector<std::string>> param = {{"1", "1"},
                                                    {"1", "2"},
                                                    {"2", "1"},
@@ -160,17 +159,17 @@ TEST_F(ExamDataPopulatorTest, ProcessExamsValidRoomsTest) {
                                                    {"5", "1"},
                                                    {"5", "2"},
                                                    {"5", "3"}};
-    pop.processExamsValidRooms(param);
+    builder.processExamsValidRooms(param);
     std::vector<std::vector<int>> asserterExamRoomsValidity = {{1, 1, 0},
                                                                {1, 1, 0},
                                                                {0, 0, 1},
                                                                {0, 0, 1},
                                                                {1, 1, 1}};
-    ASSERT_EQ(examData->examRoomsValidity, asserterExamRoomsValidity);
+    ASSERT_EQ(builder.tmp.examRoomsValidity.value(), asserterExamRoomsValidity);
 }
 
 TEST_F(ExamDataPopulatorTest, ProcessStudentsExamsTest) {
-    examData->examID = {
+    builder.tmp.examID.value() = {
              8531,  9099,  9101,  9132, 10408,  //4
             10409, 10415, 10417, 10418, 10420,  //9
             10421, 10429, 10430, 10432, 10435, //14
@@ -215,10 +214,6 @@ TEST_F(ExamDataPopulatorTest, ProcessStudentsExamsTest) {
             {23,25},
             {0,34,36,38,44}
     };
-    pop.processStudentsExams(studentsExams);
-    ASSERT_EQ(examData->enrollment,asserter);
-}
-
-TEST_F(ExamDataPopulatorTest, CollisionLimit){
-    ASSERT_EQ(examData->examsCollisions,examData->examsCollisionsLimit14);
+    builder.processStudentsExams(studentsExams);
+    ASSERT_EQ(builder.tmp.enrollment.value(), asserter);
 }

@@ -64,4 +64,4 @@ if(WIN32)
 endif()
 
 # uncomment if you want to use Google tests. The files from the Google tests repo must be in Google_tests/lib
-# add_subdirectory(Google_tests)
+add_subdirectory(Google_tests)

@@ -11,7 +11,7 @@ int main() {
     // Number of maximum concurrent threads
     const int max_concurrent_threads = 15;
     // Number of total threads
-    const int num_threads = 15;
+    const int num_threads = 1;
 
     // Logger will store all solutions
     ExamDataLogger logger;

@@ -1,7 +1,7 @@
 //
 // Created by hansk on 2024-06-17 00:00:00.
 //
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 #include "data_utils/ExamDataAccdbParser.h"
 
 class ExamDataAccdbParserTest : public ::testing::Test {
@@ -114,18 +114,27 @@ TEST_F(ExamDataAccdbParserTest, ParsePeriodsTest) {
 TEST_F(ExamDataAccdbParserTest, ParseRoomsTest) {
     auto result = parser->parseRooms();
     std::vector<std::vector<std::string>> asserter = {
-            {"1",  "HW.209",   "24", "einzeln"},
-            {"2",  "HW.303",   "40", "normal"},
-            {"3",  "HW.307",   "30", "normal"},
-            {"4",  "HQ.007",   "33", "normal"},
-            {"5",  "HQ.013",   "33", "normal"},
-            {"7",  "HQ.105",   "33", "normal"},
-            {"14", "HQ.305",   "11", "einzeln"},
-            {"22", "KA.034",   "75", "extern"},
-            {"23", "WD.001",   "80", "extern"},
-            {"24", "Online",   "0",  "online"},
-            {"26", "BB.006",   "65", "extern"},
-            {"27", "SP.467/8", "30", "normal"}};
+        {"1", "HW.209", "24", "einzeln"},
+        {"2", "HW.303", "40", "normal"},
+        {"3", "HW.307", "30", "normal"},
+        {"4", "HQ.007", "33", "normal"},
+        {"5", "HQ.013", "33", "normal"},
+        {"6", "HQ.104", "9", "andererTyp"},
+        {"7", "HQ.105", "33", "normal"},
+        {"8", "HQ.110", "12", "andererTyp"},
+        {"11", "HQ.205", "27", "andererTyp"},
+        {"13", "HQ.211", "26", "andererTyp"},
+        {"14", "HQ.305", "7", "einzeln"},
+        {"15", "HQ.306", "24", "andererTyp"},
+        {"16", "HQ.405", "7", "einzeln"},
+        {"17", "HQ.406", "23", "andererTyp"},
+        {"18", "HQ.412", "21", "andererTyp"},
+        {"19", "HQ.413", "18", "andererTyp"},
+        {"22", "KA.034", "75", "extern"},
+        {"23", "WD.001", "80", "extern"},
+        {"26", "BB.006", "65", "extern"},
+        {"27", "SP.467/8", "30", "normal"}
+    };
     ASSERT_EQ(result, asserter);
 }
 

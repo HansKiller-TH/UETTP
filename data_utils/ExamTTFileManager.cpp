@@ -58,10 +58,10 @@ ExamTTFileManager::importExamTTSolution(const std::shared_ptr<ExamTTData>& examD
             throw std::runtime_error("tried assigning an invalid room");
         }
         // Practical Solution allows for very small exam sizes to be placed in the same room with another exam by the same lecturer
-/*        if (examData->periodRoomsAvailability.at(periodIndex).at(roomIndex) == 0) {
-            std::cout << "period: " << std::to_string(examData->periodID.at(periodIndex)) << ", exam: "
-                      << std::to_string(examData->examID.at(examIndex)) << ", room: "
-                      << std::to_string(examData->roomID.at(roomIndex)) << std::endl;
+/*        if (examDataTMP->periodRoomsAvailability.at(periodIndex).at(roomIndex) == 0) {
+            std::cout << "period: " << std::to_string(examDataTMP->periodID.at(periodIndex)) << ", exam: "
+                      << std::to_string(examDataTMP->examID.at(examIndex)) << ", room: "
+                      << std::to_string(examDataTMP->roomID.at(roomIndex)) << std::endl;
             throw std::runtime_error("tried assigning an unavailable room");
         }*/
         if (solution->examData->roomType.at(roomIndex) != RoomType::Online)
