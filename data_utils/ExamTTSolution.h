@@ -63,8 +63,7 @@ struct ExamTTSolution {
         return *this;
     }
 
-    /*bool operator==(const ExamTTSolution& other) const {
-        return true;
+    bool operator==(const ExamTTSolution& other) const {
         return examPeriod == other.examPeriod &&
                examRooms == other.examRooms &&
                periodRoomsAvailability == other.periodRoomsAvailability &&
@@ -73,7 +72,10 @@ struct ExamTTSolution {
                creationDateTime == other.creationDateTime &&
                costAndTimeLog == other.costAndTimeLog &&
                configuration == other.configuration;
-    }*/
+    }
+    bool operator!=(const ExamTTSolution &other) const {
+        return !(*this == other);
+    }
 
     [[nodiscard]] ExamTTSolution deepCopy() const{
         return {*this, true};
