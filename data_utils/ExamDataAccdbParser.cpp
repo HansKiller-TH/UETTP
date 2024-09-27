@@ -32,7 +32,7 @@ std::vector<std::vector<std::string>> ExamDataAccdbParser::parseExamsValidRooms(
 }
 
 std::vector<std::vector<std::string>> ExamDataAccdbParser::parseStudentsExams() {
-    return fh.readMSAccessFile("SELECT StudentID, PruefungID FROM Pruefungsanmeldung ORDER BY StudentID");
+    return fh.readMSAccessFile("SELECT StudentID, PruefungID FROM Pruefungsanmeldungen ORDER BY StudentID");
 }
 
 std::vector<std::vector<std::string>> ExamDataAccdbParser::parseSamePeriod() {
