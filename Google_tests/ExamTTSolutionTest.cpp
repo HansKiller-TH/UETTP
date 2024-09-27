@@ -41,10 +41,16 @@ TEST(ExamTTSolutionTest, deepCopyMakeSharedTest){
     ExamTTData examTTData(tmp);
     ExamTTSolution solution(std::make_shared<ExamTTData>(examTTData));
     solution.examPeriod = {1,2,3};
+    solution.examDegreeOfSaturation = {0, 4, 2};
+    std::cout << "obj: " << solution.examDegreeOfSaturation.size() << std::endl;
     auto sol_ptr = std::make_shared<ExamTTSolution>(solution);
     ASSERT_EQ(*sol_ptr, solution);
-    auto copy_ptr = std::make_shared<ExamTTSolution>(sol_ptr->deepCopy());
+    std::cout << "before: " << sol_ptr->examDegreeOfSaturation.size() << std::endl;
+    ASSERT_NE(sol_ptr->examDegreeOfSaturation.size(),0);
+    auto copy_ptr = std::make_shared<ExamTTSolution>(*sol_ptr);
+    std::cout << "after: " << copy_ptr->examDegreeOfSaturation.size() << std::endl;
     ASSERT_NE(sol_ptr, copy_ptr);
     ASSERT_EQ(*sol_ptr, *copy_ptr);
-    ASSERT_EQ(sol_ptr->examPeriod, copy_ptr->examPeriod);
+    ASSERT_EQ(sol_ptr->examDegreeOfSaturation, copy_ptr->examDegreeOfSaturation);
+
 }

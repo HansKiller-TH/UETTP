@@ -7,10 +7,11 @@
 
 class ExamDataPopulatorTest : public ::testing::Test {
 protected:
-    ExamTTDataBuilder builder; // Instance of your class to test
+    ExamTTDataBuilder builder = ExamTTDataBuilder(""); // Instance of your class to test
 
     // You can add setup code here, it will be executed before each test
     void SetUp() override {
+
     }
 };
 
