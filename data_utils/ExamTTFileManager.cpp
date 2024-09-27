@@ -14,7 +14,7 @@
 std::shared_ptr<ExamTTData> ExamTTFileManager::importExamTTData(const std::string &filepath) {
     std::cout << "Importing..." << std::endl;
     auto parser = ExamDataParserFactory::createParser(filepath);
-    ExamTTDataBuilder examTTDataBuilder;
+    ExamTTDataBuilder examTTDataBuilder(filepath);
     return examTTDataBuilder.processPeriods(parser->parsePeriods())
     .processRooms(parser->parseRooms())
     .processRoomsValidPeriods(parser->parseRoomsValidPeriods())
@@ -87,7 +87,7 @@ void ExamTTFileManager::exportExamTTSolution(const std::shared_ptr<ExamTTSolutio
         row.emplace_back(std::to_string(examTTSolution->examData->examID.at(i)));
         row.emplace_back(std::to_string(examTTSolution->examData->periodSlot.at(periodIndex)));
         row.emplace_back(std::to_string(examTTSolution->examData->periodDay.at(periodIndex)));
-        row.emplace_back(std::to_string(examTTSolution->examData->periodID.at(periodIndex)));
+        //row.emplace_back(std::to_string(examTTSolution->examData->periodID.at(periodIndex)));
         termin.emplace_back(row);
     }
     fh.writeMSAccessFile("Pruefungstermin", termin);

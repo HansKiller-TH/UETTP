@@ -5,6 +5,7 @@
 #ifndef STEP_COUNTING_HILL_CLIMBING_ALGORITHM_SCHC_H
 #define STEP_COUNTING_HILL_CLIMBING_ALGORITHM_SCHC_H
 
+#include <iostream>
 #include <random>
 #include <memory>
 #include <functional>

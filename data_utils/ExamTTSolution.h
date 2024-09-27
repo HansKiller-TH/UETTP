@@ -36,17 +36,20 @@ struct ExamTTSolution {
                     periodRoomsAvailability.at(period).at(room) = 1;
     }
 
-    ExamTTSolution(const ExamTTSolution &other):examData(other.examData){
-        if (this != &other) {
-            this->examPeriod = other.examPeriod;
-            this->examRooms = other.examRooms;
-            this->periodRoomsAvailability = other.periodRoomsAvailability;
-            this->periodExamCollisions = other.periodExamCollisions;
-            this->periodExams = other.periodExams;
-            this->creationDateTime = other.creationDateTime;
-            this->costAndTimeLog = other.costAndTimeLog;
-            this->configuration = other.configuration;
-        }
+    ExamTTSolution(const ExamTTSolution &other) : examData(other.examData) {
+        this->examPeriod = other.examPeriod;
+        this->examRooms = other.examRooms;
+        this->periodRoomsAvailability = other.periodRoomsAvailability;
+        this->periodExamCollisions = other.periodExamCollisions;
+        this->periodExams = other.periodExams;
+        this->examDegreeOfSaturation = other.examDegreeOfSaturation;
+        this->cost = other.cost;
+        this->runTime = other.runTime;
+        this->costLimit = other.costLimit;
+        this->costAbove = other.costAbove;
+        this->creationDateTime = other.creationDateTime;
+        this->costAndTimeLog = other.costAndTimeLog;
+        this->configuration = other.configuration;
     }
 
     ExamTTSolution &operator=(const ExamTTSolution &other) {
@@ -56,6 +59,11 @@ struct ExamTTSolution {
             this->periodRoomsAvailability = other.periodRoomsAvailability;
             this->periodExamCollisions = other.periodExamCollisions;
             this->periodExams = other.periodExams;
+            this->examDegreeOfSaturation = other.examDegreeOfSaturation;
+            this->cost = other.cost;
+            this->runTime = other.runTime;
+            this->costLimit = other.costLimit;
+            this->costAbove = other.costAbove;
             this->creationDateTime = other.creationDateTime;
             this->costAndTimeLog = other.costAndTimeLog;
             this->configuration = other.configuration;
@@ -63,8 +71,9 @@ struct ExamTTSolution {
         return *this;
     }
 
-    bool operator==(const ExamTTSolution& other) const {
-        return examPeriod == other.examPeriod &&
+    bool operator==(const ExamTTSolution &other) const {
+        return *examData == *(other.examData) &&
+               examPeriod == other.examPeriod &&
                examRooms == other.examRooms &&
                periodRoomsAvailability == other.periodRoomsAvailability &&
                periodExamCollisions == other.periodExamCollisions &&
@@ -73,11 +82,13 @@ struct ExamTTSolution {
                costAndTimeLog == other.costAndTimeLog &&
                configuration == other.configuration;
     }
+
     bool operator!=(const ExamTTSolution &other) const {
         return !(*this == other);
     }
 
-    [[nodiscard]] ExamTTSolution deepCopy() const{
+    /**@brief also creates a copy of the examData obj */
+    [[nodiscard]] ExamTTSolution deepCopy() const {
         return {*this, true};
     }
 
@@ -100,16 +111,21 @@ struct ExamTTSolution {
     int costLimit = 0;
     int costAbove = 0;
     std::string creationDateTime;
-    std::vector<std::pair<int,double>> costAndTimeLog;
+    std::vector<std::pair<int, double>> costAndTimeLog;
     std::string configuration;
 private:
-    ExamTTSolution(const ExamTTSolution& other, bool deepCopy)
-            : examData(std::make_shared<ExamTTData>(*other.examData)){
+    ExamTTSolution(const ExamTTSolution &other, bool deepCopy)
+            : examData(std::make_shared<ExamTTData>(*other.examData)) {
         this->examPeriod = other.examPeriod;
         this->examRooms = other.examRooms;
         this->periodRoomsAvailability = other.periodRoomsAvailability;
         this->periodExamCollisions = other.periodExamCollisions;
         this->periodExams = other.periodExams;
+        this->examDegreeOfSaturation = other.examDegreeOfSaturation;
+        this->cost = other.cost;
+        this->runTime = other.runTime;
+        this->costLimit = other.costLimit;
+        this->costAbove = other.costAbove;
         this->creationDateTime = other.creationDateTime;
         this->costAndTimeLog = other.costAndTimeLog;
         this->configuration = other.configuration;
