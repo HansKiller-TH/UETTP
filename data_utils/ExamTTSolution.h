@@ -37,16 +37,19 @@ struct ExamTTSolution {
     }
 
     ExamTTSolution(const ExamTTSolution &other) : examData(other.examData) {
-        if (this != &other) {
-            this->examPeriod = other.examPeriod;
-            this->examRooms = other.examRooms;
-            this->periodRoomsAvailability = other.periodRoomsAvailability;
-            this->periodExamCollisions = other.periodExamCollisions;
-            this->periodExams = other.periodExams;
-            this->creationDateTime = other.creationDateTime;
-            this->costAndTimeLog = other.costAndTimeLog;
-            this->configuration = other.configuration;
-        }
+        this->examPeriod = other.examPeriod;
+        this->examRooms = other.examRooms;
+        this->periodRoomsAvailability = other.periodRoomsAvailability;
+        this->periodExamCollisions = other.periodExamCollisions;
+        this->periodExams = other.periodExams;
+        this->examDegreeOfSaturation = other.examDegreeOfSaturation;
+        this->cost = other.cost;
+        this->runTime = other.runTime;
+        this->costLimit = other.costLimit;
+        this->costAbove = other.costAbove;
+        this->creationDateTime = other.creationDateTime;
+        this->costAndTimeLog = other.costAndTimeLog;
+        this->configuration = other.configuration;
     }
 
     ExamTTSolution &operator=(const ExamTTSolution &other) {
@@ -56,6 +59,11 @@ struct ExamTTSolution {
             this->periodRoomsAvailability = other.periodRoomsAvailability;
             this->periodExamCollisions = other.periodExamCollisions;
             this->periodExams = other.periodExams;
+            this->examDegreeOfSaturation = other.examDegreeOfSaturation;
+            this->cost = other.cost;
+            this->runTime = other.runTime;
+            this->costLimit = other.costLimit;
+            this->costAbove = other.costAbove;
             this->creationDateTime = other.creationDateTime;
             this->costAndTimeLog = other.costAndTimeLog;
             this->configuration = other.configuration;
@@ -113,6 +121,11 @@ private:
         this->periodRoomsAvailability = other.periodRoomsAvailability;
         this->periodExamCollisions = other.periodExamCollisions;
         this->periodExams = other.periodExams;
+        this->examDegreeOfSaturation = other.examDegreeOfSaturation;
+        this->cost = other.cost;
+        this->runTime = other.runTime;
+        this->costLimit = other.costLimit;
+        this->costAbove = other.costAbove;
         this->creationDateTime = other.creationDateTime;
         this->costAndTimeLog = other.costAndTimeLog;
         this->configuration = other.configuration;

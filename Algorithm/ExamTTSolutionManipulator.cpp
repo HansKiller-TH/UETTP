@@ -416,6 +416,8 @@ bool ExamTTSolutionManipulator::tryAssignRandomRoomsForEachExamInPeriod(const st
 void ExamTTSolutionManipulator::moveExamToPeriod(const int &exam, const int &period) {
     if (exam == -1)
         return;
+    if(exam >=solution_->examPeriod.size())
+        throw std::invalid_argument("exam index is out of range of examPeriod");
     auto oldPeriod = solution_->examPeriod.at(exam);
     if (oldPeriod == period)
         return;

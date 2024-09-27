@@ -16,7 +16,9 @@
 
 class ExamTTDataBuilder {
 public:
-    ExamTTDataBuilder() : tmp() {}
+    explicit ExamTTDataBuilder(const std::string& filepath) : tmp() {
+        tmp.filePath = filepath;
+    }
     ExamTTDataBuilder processPeriods(const std::vector<std::vector<std::string>> &periods);
     ExamTTDataBuilder processRooms(const std::vector<std::vector<std::string>> &rooms);
     ExamTTDataBuilder processRoomsValidPeriods(const std::vector<std::vector<std::string>> &roomsPeriods);
