@@ -88,48 +88,33 @@ struct ExamTTData {
     const std::vector<std::set<int>> examSamePeriod;
     const std::vector<std::vector<std::vector<int>>> examsCollisionsLimit;
     const std::vector<std::vector<std::vector<int>>> examsCollisionsAbove;
-//private:
-    /*// Solution dependent data
-    //these two essentially represent the timetable. Indexes will have te be replaced with original IDs.
-    *//**@brief List of rooms' indexes for each exam*//*
-    std::vector<std::set<int>> examRooms;
-    *//**@brief Period's index for each exam*//*
-    std::vector<int> examPeriod;
-    *//**@brief 1 if room available, 0 if room assigned, -1 if room invalid*//*
-    std::vector<std::vector<int>> periodRoomsAvailability; //includes validity. per period more convenient
-    *//**@brief Weighted matrix showing collision between periods (row) and exams (column).
-     * Used to determine Degree Of Saturation for Graph Coloring initial solution_.*//*
-    std::vector<std::vector<int>> periodExamCollisions;
-    std::vector<std::set<int>> periodExams;
-    std::vector<int> examDegreeOfSaturation; //Initial Solution Graph Coloring.
-
-    int cost = 0;
-    double runTime = 0;
-    int costLimit = 0;
-    int costAbove = 0;
-    std::string creationDateTime;
-    *//** cost and time *//*
-    std::vector<std::pair<int,double>> costAndTimeLog;
-    std::string configuration;*/
-
-    /** Collision matrix for student with 7 enrolments max *//*
-    std::vector<std::vector<int>> examsCollisionsLimit7;
-    *//** Collision matrix for student with more than 7 enrolments *//*
-    std::vector<std::vector<int>> examsCollisionsBeyond7;
-    *//** Collision matrix for student with 8 enrolments max *//*
-    std::vector<std::vector<int>> examsCollisionsLimit8;
-    *//** Collision matrix for student with 9 enrolments max *//*
-    std::vector<std::vector<int>> examsCollisionsLimit9;
-    *//** Collision matrix for student with 10 enrolments max *//*
-    std::vector<std::vector<int>> examsCollisionsLimit10;
-    *//** Collision matrix for student with 11 enrolments max *//*
-    std::vector<std::vector<int>> examsCollisionsLimit11;
-    *//** Collision matrix for student with 12 enrolments max *//*
-    std::vector<std::vector<int>> examsCollisionsLimit12;
-    *//** Collision matrix for student with 13 enrolments max *//*
-    std::vector<std::vector<int>> examsCollisionsLimit13;
-    *//** Collision matrix for student with 14 enrolments max *//*
-    std::vector<std::vector<int>> examsCollisionsLimit14;*/
+    bool operator==(const ExamTTData& other) const {
+        return filePath == other.filePath &&
+               timeStamp == other.timeStamp &&
+               dataSet == other.dataSet &&
+               periodID == other.periodID &&
+               periodDay == other.periodDay &&
+               periodSlot == other.periodSlot &&
+               periodWeek == other.periodWeek &&
+               periodDate == other.periodDate &&
+               roomID == other.roomID &&
+               roomName == other.roomName &&
+               roomSize == other.roomSize &&
+               roomType == other.roomType &&
+               roomPeriodsValidity == other.roomPeriodsValidity &&
+               examID == other.examID &&
+               examName == other.examName &&
+               examSize == other.examSize &&
+               examPeriodsValidity == other.examPeriodsValidity &&
+               examRoomsValidity == other.examRoomsValidity &&
+               enrollment == other.enrollment &&
+               examsCollisions == other.examsCollisions &&
+               examsCollisionsLimit == other.examsCollisionsLimit &&
+               examsCollisionsAbove == other.examsCollisionsAbove &&
+               examCollisionExams == other.examCollisionExams &&
+               examDegree == other.examDegree &&
+               examSamePeriod == other.examSamePeriod;
+    }
 };
 
 #endif //STEP_COUNTING_HILL_CLIMBING_ALGORITHM_EXAMTTDATA_H

@@ -19,3 +19,32 @@ TEST(ExamTTSolutionTest, copyTest){
     copy.examPeriod = {1,2,3,4,5};
     EXPECT_NE(copy,solution);
 }
+
+TEST(ExamTTSolutionTest, deepCopyTest){
+    ExamTTDataTMP tmp;
+    tmp.examID = {1,2,3,4};
+    ExamTTData examTTData(tmp);
+    ExamTTSolution solution(std::make_shared<ExamTTData>(examTTData));
+    solution.examPeriod = {1,2,3};
+    auto copy = solution.deepCopy();
+    EXPECT_EQ(copy, solution);
+    EXPECT_NE(copy.examData,solution.examData);
+    EXPECT_EQ(*copy.examData,*solution.examData);
+    EXPECT_EQ(copy.examData->examID,solution.examData->examID);
+    copy.examPeriod = {1,2,3,4,5};
+    EXPECT_NE(copy,solution);
+}
+
+TEST(ExamTTSolutionTest, deepCopyMakeSharedTest){
+    ExamTTDataTMP tmp;
+    tmp.examID = {1,2,3,4};
+    ExamTTData examTTData(tmp);
+    ExamTTSolution solution(std::make_shared<ExamTTData>(examTTData));
+    solution.examPeriod = {1,2,3};
+    auto sol_ptr = std::make_shared<ExamTTSolution>(solution);
+    ASSERT_EQ(*sol_ptr, solution);
+    auto copy_ptr = std::make_shared<ExamTTSolution>(sol_ptr->deepCopy());
+    ASSERT_NE(sol_ptr, copy_ptr);
+    ASSERT_EQ(*sol_ptr, *copy_ptr);
+    ASSERT_EQ(sol_ptr->examPeriod, copy_ptr->examPeriod);
+}
