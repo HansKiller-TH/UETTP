@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "Algorithm/ExamTTSolutionManipulator.h"
 #include "data_utils/ExamTTSolution.h"
+#include "data_utils/ExamTTDataBuilder.h"
 
 //
 // Created by hansk on 17.05.2024.
@@ -75,11 +76,14 @@ TEST_F(ExamDataManipulatorTest, getRandomRoomsForExamInPeriodTest) {
 }
 
 TEST_F(ExamDataManipulatorTest, getBestFittingRoomsForExamTest) {
-    ExamTTDataTMP examDataTMP;
-    examDataTMP.examSize.value() = {11};
-    examDataTMP.roomSize.value() = {4, 5, 6, 7, 50};
-    examDataTMP.examRoomsValidity.value() = {{1, 1, 1, 1, 1}};
-    auto examTTData = std::make_shared<ExamTTData>(examDataTMP);
+    ExamTTDataBuilder builder("");
+    //ExamTTDataTMP examDataTMP;
+    builder.tmp.examID.value() = {69};
+    builder.tmp.examSize.value() = {11};
+    builder.tmp.roomSize.value() = {4, 5, 6, 7, 50};
+    builder.tmp.examRoomsValidity.value() = {{1, 1, 1, 1, 1}};
+    builder.createAllPossibleRoomCombinationsForEachExam();
+    auto examTTData = std::make_shared<ExamTTData>(builder.tmp);
     auto solution = std::make_shared<ExamTTSolution>(examTTData);
     solution->periodRoomsAvailability = {{1, 1, 1, 1, -1}};
     manipulator.setSolution(solution);
@@ -116,17 +120,19 @@ TEST_F(ExamDataManipulatorTest, trySwitchUsedRoomsTest) {
 }
 
 TEST_F(ExamDataManipulatorTest, tryAssignBestFittingRoomsForEachExamInPeriodWithoutTest) {
-    ExamTTDataTMP examDataTMP;
-    examDataTMP.roomSize.value() = {5, 6, 7, 8, 9, 12};
-    examDataTMP.examSize.value() = {4, 5, 6, 7, 8, 9, 10};
-    examDataTMP.examRoomsValidity.value() = {{1, 1, 1, 1, 1, 1},
+    ExamTTDataBuilder builder("");
+    builder.tmp.examID = {69,68,67,66,65,64,63};
+    builder.tmp.roomSize.value() = {5, 6, 7, 8, 9, 12};
+    builder.tmp.examSize.value() = {4, 5, 6, 7, 8, 9, 10};
+    builder.tmp.examRoomsValidity.value() = {{1, 1, 1, 1, 1, 1},
                                       {1, 1, 1, 1, 1, 1},
                                       {1, 1, 1, 1, 1, 1},
                                       {1, 1, 1, 1, 1, 1},
                                       {1, 1, 1, 1, 1, 1},
                                       {1, 1, 1, 1, 1, 1},
                                       {1, 1, 1, 1, 1, 1}};
-    auto examTTData = std::make_shared<ExamTTData>(examDataTMP);
+    builder.createAllPossibleRoomCombinationsForEachExam();
+    auto examTTData = std::make_shared<ExamTTData>(builder.tmp);
     auto solution = std::make_shared<ExamTTSolution>(examTTData);
     solution->examRooms = {{},
                               {2},
@@ -153,17 +159,19 @@ TEST_F(ExamDataManipulatorTest, tryAssignBestFittingRoomsForEachExamInPeriodWith
     ASSERT_EQ(manipulator.getSolution()->examRooms, asserterExamRooms);
 }
 TEST_F(ExamDataManipulatorTest, tryAssignBestFittingRoomsForEachExamInPeriodWithout_NotEnoughRoom_Test) {
-    ExamTTDataTMP examDataTMP;
-    examDataTMP.roomSize.value() = {5, 6, 7, 8, 9, 12};
-    examDataTMP.examSize.value() = {4, 5, 6, 7, 8, 9, 10};
-    examDataTMP.examRoomsValidity.value() = {{1, 1, 1, 1, 1, 1},
+    ExamTTDataBuilder builder("");
+    builder.tmp.examID.value() = {69,68,67,66,65,64,63};
+    builder.tmp.roomSize.value() = {5, 6, 7, 8, 9, 12};
+    builder.tmp.examSize.value() = {4, 5, 6, 7, 8, 9, 10};
+    builder.tmp.examRoomsValidity.value() = {{1, 1, 1, 1, 1, 1},
                                       {1, 1, 1, 1, 1, 1},
                                       {1, 1, 1, 1, 1, 1},
                                       {1, 1, 1, 1, 1, 1},
                                       {1, 1, 1, 1, 1, 1},
                                       {1, 1, 1, 1, 1, 1},
                                       {1, 1, 1, 1, 1, 1}};
-    auto examTTData = std::make_shared<ExamTTData>(examDataTMP);
+    builder.createAllPossibleRoomCombinationsForEachExam();
+    auto examTTData = std::make_shared<ExamTTData>(builder.tmp);
     auto solution = std::make_shared<ExamTTSolution>(examTTData);
     solution->periodRoomsAvailability = {{-1, -1, -1, -1, 0, 0}};
     solution->examRooms = {{},

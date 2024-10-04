@@ -40,7 +40,7 @@ TEST_F(ExamDataPopulatorTest, ProcessPeriodsVectorSizeTooSmallTest) {
                                                    {"3", "1", "9",  "0", "2024-01-18"},
                                                    {"4", "1", "10", "0", "2024-01-18"},
                                                    {"5", "2", "7",  "1", "2024-01-19"}};
-    ASSERT_THROW(builder.processPeriods(param),std::invalid_argument);
+    ASSERT_THROW(builder.processPeriods(param), std::invalid_argument);
     std::vector<int> asserterID = {1};
     ASSERT_EQ(builder.tmp.periodID.value(), asserterID);
     std::vector<int> asserterDay = {1};
@@ -67,8 +67,8 @@ TEST_F(ExamDataPopulatorTest, ProcessRoomsTest) {
     std::vector<int> asserterSize = {7, 8, 9, 10, 11};
     ASSERT_EQ(builder.tmp.roomSize.value(), asserterSize);
     std::vector<RoomType> asserterType = {RoomType::Single, RoomType::Online,
-                                                      RoomType::Normal, RoomType::External,
-                                                      RoomType::Unknown};
+                                          RoomType::Normal, RoomType::External,
+                                          RoomType::Unknown};
     ASSERT_EQ(builder.tmp.roomType.value(), asserterType);
 }
 
@@ -78,7 +78,7 @@ TEST_F(ExamDataPopulatorTest, ProcessRoomsVectorSizeTooSmallTest) {
                                                    {"3", "C", "9"},
                                                    {"4", "D", "10", "extern"},
                                                    {"5", "E", "11", "1"}};
-    ASSERT_THROW(builder.processRooms(param),std::invalid_argument);
+    ASSERT_THROW(builder.processRooms(param), std::invalid_argument);
     std::vector<int> asserterID = {1, 2};
     ASSERT_EQ(builder.tmp.roomID.value(), asserterID);
     std::vector<std::string> asserterName = {"A", "B"};
@@ -171,7 +171,7 @@ TEST_F(ExamDataPopulatorTest, ProcessExamsValidRoomsTest) {
 
 TEST_F(ExamDataPopulatorTest, ProcessStudentsExamsTest) {
     builder.tmp.examID.value() = {
-             8531,  9099,  9101,  9132, 10408,  //4
+            8531, 9099, 9101, 9132, 10408,  //4
             10409, 10415, 10417, 10418, 10420,  //9
             10421, 10429, 10430, 10432, 10435, //14
             10439, 10440, 10444, 10447, 10448, //19
@@ -199,7 +199,7 @@ TEST_F(ExamDataPopulatorTest, ProcessStudentsExamsTest) {
                                                            {"2819", "11129"},
                                                            {"2819", "10448"},
                                                            {"2819", "10429"},
-                                                           {"2819", "9101" },
+                                                           {"2819", "9101"},
                                                            {"2823", "10469"},
                                                            {"2823", "10479"},
                                                            {"2824", "10512"},
@@ -207,14 +207,64 @@ TEST_F(ExamDataPopulatorTest, ProcessStudentsExamsTest) {
                                                            {"2824", "10541"},
                                                            {"2824", "10524"},
                                                            {"2824", "10504"}};
-    std::vector<std::set<int>> asserter ={
+    std::vector<std::set<int>> asserter = {
             {4},
-            {34,44},
-            {4,5,8,10,13,14,17,19,21,45},
-            {2,11,19,45},
-            {23,25},
-            {0,34,36,38,44}
+            {34, 44},
+            {4,  5,  8,  10, 13, 14, 17, 19, 21, 45},
+            {2,  11, 19, 45},
+            {23, 25},
+            {0,  34, 36, 38, 44}
     };
     builder.processStudentsExams(studentsExams);
     ASSERT_EQ(builder.tmp.enrollment.value(), asserter);
+}
+
+TEST_F(ExamDataPopulatorTest, CreateAllPossibleRoomCombinationsForEachExamTest) {
+    builder.tmp.examID = {0, 1, 2};
+    builder.tmp.examSize = {60, 40, 5};
+    builder.tmp.roomSize = {5,  // 0
+                            6,  // 1
+                            7,  // 2
+                            10, // 3
+                            15, // 4
+                            20, // 5
+                            30, // 6
+                            80};// 7
+    builder.tmp.examRoomsValidity.value() = {
+            {0, 0, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 0, 0, 0, 0}
+    };
+    builder.createAllPossibleRoomCombinationsForEachExam();
+    std::vector<std::vector<std::pair<std::set<int>, int>>> asserter = {
+            {
+                    {{7},       80},
+                    {{3, 5, 6}, 60},
+                    {{4, 5, 6}, 65},
+                    {{2,3,4,6}, 62}},
+            {
+                    {{7},             {80}},
+                    {{3, 6},          {40}},
+                    {{4, 6},          {45}},
+                    {{5, 6},          {50}},
+                    {{0, 4, 5},       {40}},
+                    {{1, 4, 5},       {41}},
+                    {{0, 1, 6},       {41}},
+                    {{2, 4, 5},       {42}},
+                    {{0, 2, 6},       {42}},
+                    {{1, 2, 6},       {43}},
+                    {{3, 4, 5},       {45}},
+                    {{0, 1, 3, 5},    {41}},
+                    {{0, 2, 3, 5},    {42}},
+                    {{1, 2, 3, 5},    {43}},
+                    {{0, 1, 2, 3, 4}, {43}}
+            },
+            {
+                    {{0}, 5},
+                    {{1}, 6},
+                    {{2}, 7},
+                    {{3},10}
+            }
+    };
+    ASSERT_EQ(builder.tmp.examsPossibleRoomCombinations, asserter);
 }

@@ -195,6 +195,7 @@ ExamTTDataBuilder ExamTTDataBuilder::createAllPossibleRoomCombinationsForEachExa
         auto validRooms = VectorUtils::getIndexesWherePredicate(tmp.examRoomsValidity.value().at(examIndex), [](const int& a){return a == 1;});
         auto binIndexAndSize = VectorUtils::getSortedValuesUsingValueAsIndexInSecond(validRooms, tmp.roomSize.value(), [](std::pair<int, int> a, std::pair<int, int> b){return a.second > b.second;});
         auto roomCombos = VectorUtils::binPackingAllBins(tmp.examSize.value().at(examIndex), binIndexAndSize);
+        VectorUtils::sortBinResult(roomCombos);
         tmp.examsPossibleRoomCombinations.value().at(examIndex) = roomCombos;
     }
     return *this;
