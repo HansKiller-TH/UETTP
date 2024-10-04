@@ -18,7 +18,7 @@
 //#include "ExamTTDataBuilder.h"
 #include "RoomType.h"
 
-/**@brief Holds the data to create or change a solution_ */
+/**@brief Holds the data to create or change a solution */
 struct ExamTTData {
     explicit ExamTTData(ExamTTDataTMP tmp) : filePath(std::move(tmp.filePath.value())),
                                                 timeStamp(DateTimeProvider::getDateTimeNow()),
@@ -44,7 +44,8 @@ struct ExamTTData {
                                                 examsCollisionsAbove(tmp.examsCollisionsAbove.value()),
                                                 examCollisionExams(tmp.examCollisionExams.value()),
                                                 examDegree(tmp.examDegree.value()),
-                                                examSamePeriod(tmp.examSamePeriod.value()){}
+                                                examSamePeriod(tmp.examSamePeriod.value()),
+                                                examsPossibleRoomCombinations(tmp.examsPossibleRoomCombinations.value()){}
 
     const std::string filePath;
     const std::string timeStamp;
@@ -88,6 +89,8 @@ struct ExamTTData {
     const std::vector<std::set<int>> examSamePeriod;
     const std::vector<std::vector<std::vector<int>>> examsCollisionsLimit;
     const std::vector<std::vector<std::vector<int>>> examsCollisionsAbove;
+    const std::vector<std::vector<std::pair<std::set<int>, int>>> examsPossibleRoomCombinations;
+
     bool operator==(const ExamTTData& other) const {
         return filePath == other.filePath &&
                timeStamp == other.timeStamp &&
@@ -113,7 +116,8 @@ struct ExamTTData {
                examsCollisionsAbove == other.examsCollisionsAbove &&
                examCollisionExams == other.examCollisionExams &&
                examDegree == other.examDegree &&
-               examSamePeriod == other.examSamePeriod;
+               examSamePeriod == other.examSamePeriod &&
+               examsPossibleRoomCombinations == other.examsPossibleRoomCombinations;
     }
 };
 

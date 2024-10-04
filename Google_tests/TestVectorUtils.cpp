@@ -300,3 +300,14 @@ TEST(VectorUtilsTest, getFirstSubset){
     result = VectorUtils::getfirstSubset(set, binSetsAndSize);
     ASSERT_FALSE(result.has_value());
 }
+
+TEST(VectorUtilsTest, getValuesIndexSecond){
+    std::set<int> indexes = {0,1,2,3};
+    std::vector<int> values = {5,6,7,8};
+    auto result = VectorUtils::getSortedValuesUsingValueAsIndexInSecond(indexes, values, [](std::pair<int, int> a, std::pair<int, int> b){return a.second > b.second;});
+    std::vector<std::pair<int, int>> asserter = {{3,8},
+                                                 {2,7},
+                                                 {1,6},
+                                                 {0,5}};
+    ASSERT_EQ(result, asserter);
+}

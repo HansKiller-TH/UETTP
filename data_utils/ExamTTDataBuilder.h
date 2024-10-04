@@ -28,6 +28,7 @@ public:
     ExamTTDataBuilder processStudentsExams(const std::vector<std::vector<std::string>> &studentsExams);
     ExamTTDataBuilder processSamePeriods(const std::vector<std::vector<std::string>> &exams);
     ExamTTDataBuilder createCollisionsFromEnrollment();
+    ExamTTDataBuilder createAllPossibleRoomCombinationsForEachExam();
 
     void createCollisionMatrixLimitEnrolment();
 

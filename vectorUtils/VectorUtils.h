@@ -14,7 +14,7 @@
 class VectorUtils {
 public:
     /**@brief Returns all indexes of the vector where the predicate is true. Predicate receives value at index*/
-    static std::list<int>
+    static std::set<int>
     getIndexesWherePredicate(const std::vector<int> &vec, const std::function<bool(const int &)> &pred);
 
     /**@brief Returns all indexes of the vectors where the predicate is true for all vectors. Predicate receives value at index. Vectors must be same size.*/
@@ -24,6 +24,10 @@ public:
     static int indexForValue(const std::vector<int> &vec, const int &value);
 
     static int indexForValue(const std::vector<int> &vec, const std::string &value);
+
+    static std::vector<std::pair<int, int>> getSortedValuesUsingValueAsIndexInSecond(
+            const std::set<int> &valuesAsIndexes, const std::vector<int>& values, const std::function<bool(
+            std::pair<int, int>, std::pair<int, int>)> &comparator);
 
     static std::pair<int, int> getLeastNumberAndSumOfBinsRequired(const int &itemSize, const std::vector<std::pair<int, int>> &binIndexAndSize);
 

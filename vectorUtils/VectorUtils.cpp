@@ -9,12 +9,12 @@
 #include <optional>
 #include "VectorUtils.h"
 
-std::list<int>
+std::set<int>
 VectorUtils::getIndexesWherePredicate(const std::vector<int> &vec, const std::function<bool(const int &)> &pred) {
-    std::list<int> result;
+    std::set<int> result;
     for (int index = 0; index < vec.size(); ++index)
         if (pred(vec.at(index)))
-            result.push_back(index);
+            result.insert(index);
     return result;
 }
 
@@ -51,10 +51,27 @@ int VectorUtils::indexForValue(const std::vector<int> &vec, const std::string &v
     return indexForValue(vec, val);
 }
 
+std::vector<std::pair<int, int>>
+VectorUtils::getSortedValuesUsingValueAsIndexInSecond(const std::set<int> &valuesAsIndexes,
+                                                      const std::vector<int> &values,
+                                                      const std::function<bool(std::pair<int, int>,
+                                                                               std::pair<int, int>)> &comparator) {
+    std::vector<std::pair<int, int>> result;
+    result.reserve(valuesAsIndexes.size());
+    for (auto &value: valuesAsIndexes)
+        result.emplace_back(value, values.at(value));
+    std::sort(result.begin(), result.end(), comparator);
+    return result;
+}
+
 void
-VectorUtils::binPackingLeastBinsAll(const int &itemSize, const std::vector<std::pair<int, int>> &binIndexAndSize,
-                                    const int &numberOfBinsRequired, std::vector<std::set<int>> &results,
-                                    std::set<int> currentBins, int currentIndex, int currentSum) {
+VectorUtils::binPackingLeastBinsAll(const int &itemSize,
+                                    const std::vector<std::pair<int, int>> &binIndexAndSize,
+                                    const int &numberOfBinsRequired,
+                                    std::vector<std::set<int>> &results,
+                                    std::set<int> currentBins,
+                                    int currentIndex,
+                                    int currentSum) {
     if (currentSum >= itemSize) {
         results.push_back(currentBins);
         return;
@@ -146,9 +163,10 @@ std::pair<int, int> VectorUtils::getLeastNumberAndSumOfBinsRequired(const int &i
 }
 
 std::optional<std::set<int>>
-VectorUtils::getfirstSubset(const std::set<int>& set, const std::vector<std::pair<std::set<int>, int>>& binSetsAndSizes) {
-    for (auto &pair:binSetsAndSizes)
-        if(std::includes(set.begin(), set.end(), pair.first.begin(), pair.first.end()))
+VectorUtils::getfirstSubset(const std::set<int> &set,
+                            const std::vector<std::pair<std::set<int>, int>> &binSetsAndSizes) {
+    for (auto &pair: binSetsAndSizes)
+        if (std::includes(set.begin(), set.end(), pair.first.begin(), pair.first.end()))
             return pair.first;
     return std::nullopt;
 }

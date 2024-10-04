@@ -38,6 +38,7 @@ struct ExamTTDataTMP {
     std::optional<std::vector<std::set<int>>> examSamePeriod;
     std::optional<std::vector<std::vector<std::vector<int>>>> examsCollisionsLimit;
     std::optional<std::vector<std::vector<std::vector<int>>>> examsCollisionsAbove;
+    std::optional<std::vector<std::vector<std::pair<std::set<int>, int>>>> examsPossibleRoomCombinations;
 
     ExamTTDataTMP() {
         filePath = std::string();
@@ -65,6 +66,7 @@ struct ExamTTDataTMP {
         examSamePeriod = std::vector<std::set<int>>();
         examsCollisionsLimit = std::vector<std::vector<std::vector<int>>>();
         examsCollisionsAbove = std::vector<std::vector<std::vector<int>>>();
+        examsPossibleRoomCombinations = std::vector<std::vector<std::pair<std::set<int>, int>>>();
     }
 };
 
