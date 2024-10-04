@@ -70,7 +70,6 @@ int main() {
     // Get the best solution_ from a multiset sorted by cost asc
     auto result = *logger.getData().begin();
     // Export the solution_ to the original filepath the ExamTTData was created from
-    std::cout << "path: " << result->examData->filePath << std::endl;
     ExamTTFileManager::exportExamTTSolution(result);
     logger.reset();
 
