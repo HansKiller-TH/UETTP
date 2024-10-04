@@ -9,6 +9,7 @@
 #include <vector>
 #include <functional>
 #include <list>
+#include <optional>
 
 class VectorUtils {
 public:
@@ -35,6 +36,17 @@ public:
                                        const int &numberOfBinsRequired, std::vector<std::set<int>> &results,
                                        std::set<int> currentBins={},
                                        int currentIndex = 0, int currentSum = 0);
+
+    static std::vector<std::pair<std::set<int>, int>> binPackingAllBins(const int& itemSize, const std::vector<std::pair<int, int>>& binIndexAndSize,
+                                                                        std::set<int> currentBins = {}, int currentIndex = 0, int currentSum = 0);
+
+    static bool customComparator(const std::pair<std::set<int>, int>& a, const std::pair<std::set<int>, int>& b);
+
+    static void sortBinResult(std::vector<std::pair<std::set<int>, int>> &binResult);
+
+    static std::optional<std::set<int>> getfirstSubset(const std::set<int>& set, const std::vector<std::pair<std::set<int>, int>>& binSetsAndSizes);
+
+    static std::set<int> getIndexesFromBinaryVector(const std::vector<int> &binaryVector, int compareValue);
 
     static std::vector<std::pair<std::string, std::set<std::string>>>
     inLineKeyValues(const std::vector<std::vector<std::string>>& data);
