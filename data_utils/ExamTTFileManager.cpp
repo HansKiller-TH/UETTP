@@ -24,6 +24,7 @@ std::shared_ptr<ExamTTData> ExamTTFileManager::importExamTTData(const std::strin
     .processStudentsExams(parser->parseStudentsExams())
     .processSamePeriods(parser->parseSamePeriod())
     .createCollisionsFromEnrollment()
+    .createAllPossibleRoomCombinationsForEachExam()
     .build();
 }
 
