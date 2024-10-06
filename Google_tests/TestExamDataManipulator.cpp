@@ -61,11 +61,13 @@ TEST_F(ExamDataManipulatorTest, getRandomExamWithConnectedWithPeriodTest) {
 }
 
 TEST_F(ExamDataManipulatorTest, getRandomRoomsForExamInPeriodTest) {
-    ExamTTDataTMP tmp;
-    tmp.examSize.value() = {11};
-    tmp.roomSize.value() = {4, 5, 7, 20, 50};
-    tmp.examRoomsValidity.value() = {{1, 1, 1, 0, 1}};
-    auto examTTData = std::make_shared<ExamTTData>(tmp);
+    ExamTTDataBuilder builder("");
+    builder.tmp.examID.value() = {69};
+    builder.tmp.examSize.value() = {11};
+    builder.tmp.roomSize.value() = {4, 5, 7, 20, 50};
+    builder.tmp.examRoomsValidity.value() = {{1, 1, 1, 0, 1}};
+    builder.createAllPossibleRoomCombinationsForEachExam();
+    auto examTTData = std::make_shared<ExamTTData>(builder.tmp);
     auto solution = std::make_shared<ExamTTSolution>(examTTData);
     solution->periodRoomsAvailability = {{1, 1, 1, 0, -1}};
     manipulator.setSolution(solution);
@@ -77,7 +79,6 @@ TEST_F(ExamDataManipulatorTest, getRandomRoomsForExamInPeriodTest) {
 
 TEST_F(ExamDataManipulatorTest, getBestFittingRoomsForExamTest) {
     ExamTTDataBuilder builder("");
-    //ExamTTDataTMP examDataTMP;
     builder.tmp.examID.value() = {69};
     builder.tmp.examSize.value() = {11};
     builder.tmp.roomSize.value() = {4, 5, 6, 7, 50};

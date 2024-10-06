@@ -168,20 +168,12 @@ std::set<int> ExamTTSolutionManipulator::getRandomRoomsForExamInPeriod(const int
     auto availableValidRooms = getAvailableValidRoomsForExamInPeriod(exam, period);
     if (availableValidRooms.empty())
         return {};
-    auto roomSizes = getRoomsIndexAndSize(availableValidRooms);
-    auto examSize = solution_->examData->examSize.at(exam);
-    auto numberOfBinsRequired = VectorUtils::getLeastNumberAndSumOfBinsRequired(examSize, roomSizes);
-    if (numberOfBinsRequired.first == 0)
+    auto combinations = VectorUtils::getSubsets(availableValidRooms, solution_->examData->examsPossibleRoomCombinations.at(exam), 4);
+    if(!combinations.has_value())
         return {};
-    std::vector<std::set<int>> combinations;
-    std::set<int> currentBins;
-    VectorUtils::binPackingLeastBinsAll(examSize, roomSizes, numberOfBinsRequired.first, combinations, currentBins, 0,
-                                        0);
-    if (combinations.empty())
-        return {};
-    std::uniform_int_distribution<std::size_t> distrRoom(0, combinations.size() - 1);
+    std::uniform_int_distribution<std::size_t> distrRoom(0, combinations->size() - 1);
     auto roomCombinationIndex = distrRoom(gen);
-    return combinations.at(roomCombinationIndex);
+    return combinations->at(roomCombinationIndex);
 }
 
 std::set<int>

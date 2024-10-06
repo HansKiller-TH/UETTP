@@ -171,6 +171,22 @@ VectorUtils::getfirstSubset(const std::set<int> &set,
     return std::nullopt;
 }
 
+std::optional<std::vector<std::set<int>>>
+VectorUtils::getSubsets(const std::set<int> &set, const std::vector<std::pair<std::set<int>, int>> &binSetsAndSizes,
+                        const int& number) {
+    std::optional<std::vector<std::set<int>>> result;
+    for (const auto& pair:binSetsAndSizes) {
+        if (!std::includes(set.begin(),set.end(), pair.first.begin(), pair.first.end()))
+            continue;
+        if(!result.has_value())
+            result = std::vector<std::set<int>>{};
+        result->emplace_back(pair.first);
+        if (result->size() == number)
+            return result;
+    }
+    return result;
+}
+
 std::set<int> VectorUtils::getIndexesFromBinaryVector(const std::vector<int> &binaryVector, int compareValue) {
     std::set<int> result;
     for (int index = 0; index < binaryVector.size(); ++index)

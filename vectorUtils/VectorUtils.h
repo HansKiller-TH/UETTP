@@ -26,34 +26,40 @@ public:
     static int indexForValue(const std::vector<int> &vec, const std::string &value);
 
     static std::vector<std::pair<int, int>> getSortedValuesUsingValueAsIndexInSecond(
-            const std::set<int> &valuesAsIndexes, const std::vector<int>& values, const std::function<bool(
+            const std::set<int> &valuesAsIndexes, const std::vector<int> &values, const std::function<bool(
             std::pair<int, int>, std::pair<int, int>)> &comparator);
 
-    static std::pair<int, int> getLeastNumberAndSumOfBinsRequired(const int &itemSize, const std::vector<std::pair<int, int>> &binIndexAndSize);
+    static std::pair<int, int>
+    getLeastNumberAndSumOfBinsRequired(const int &itemSize, const std::vector<std::pair<int, int>> &binIndexAndSize);
 
     static void binPackingSmallestAndLeastBins(const int &itemSize, const int &numberOfBinsRequired, int &maxSum,
                                                const std::vector<std::pair<int, int>> &binIndexAndSize,
                                                std::set<int> &result, std::set<int> currentBins = {},
-                                               const int currentIndex = 0, const int currentSum = 0);
+                                               int currentIndex = 0, int currentSum = 0);
 
     static void binPackingLeastBinsAll(const int &itemSize, const std::vector<std::pair<int, int>> &binIndexAndSize,
                                        const int &numberOfBinsRequired, std::vector<std::set<int>> &results,
-                                       std::set<int> currentBins={},
+                                       std::set<int> currentBins = {},
                                        int currentIndex = 0, int currentSum = 0);
 
-    static std::vector<std::pair<std::set<int>, int>> binPackingAllBins(const int& itemSize, const std::vector<std::pair<int, int>>& binIndexAndSize,
-                                                                        std::set<int> currentBins = {}, int currentIndex = 0, int currentSum = 0);
+    static std::vector<std::pair<std::set<int>, int>>
+    binPackingAllBins(const int &itemSize, const std::vector<std::pair<int, int>> &binIndexAndSize,
+                      std::set<int> currentBins = {}, int currentIndex = 0, int currentSum = 0);
 
-    static bool customComparator(const std::pair<std::set<int>, int>& a, const std::pair<std::set<int>, int>& b);
+    static bool customComparator(const std::pair<std::set<int>, int> &a, const std::pair<std::set<int>, int> &b);
 
     static void sortBinResult(std::vector<std::pair<std::set<int>, int>> &binResult);
 
-    static std::optional<std::set<int>> getfirstSubset(const std::set<int>& set, const std::vector<std::pair<std::set<int>, int>>& binSetsAndSizes);
+    static std::optional<std::set<int>>
+    getfirstSubset(const std::set<int> &set, const std::vector<std::pair<std::set<int>, int>> &binSetsAndSizes);
+
+    static std::optional<std::vector<std::set<int>>>
+    getSubsets(const std::set<int> &set, const std::vector<std::pair<std::set<int>, int>> &binSetsAndSizes, const int& number = 1);
 
     static std::set<int> getIndexesFromBinaryVector(const std::vector<int> &binaryVector, int compareValue);
 
     static std::vector<std::pair<std::string, std::set<std::string>>>
-    inLineKeyValues(const std::vector<std::vector<std::string>>& data);
+    inLineKeyValues(const std::vector<std::vector<std::string>> &data);
 };
 
 
