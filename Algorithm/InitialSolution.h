@@ -17,12 +17,12 @@
 /**@brief Constructive heuristics to create an Initial Solution */
 class InitialSolution {
 public:
-    explicit InitialSolution(const std::shared_ptr<ExamTTData>& examTTData) {
+    explicit InitialSolution(const std::shared_ptr<ExamTTData> &examTTData) {
         manipulator = std::make_shared<ExamTTSolutionManipulator>(std::make_shared<ExamTTSolution>(examTTData));
     }
 
-            /**@brief schedules exams in a certain order */
-            std::shared_ptr<ExamTTSolution> build() {
+    /**@brief schedules exams in a certain order */
+    std::shared_ptr<ExamTTSolution> build() {
         if (manipulator == nullptr)
             throw std::invalid_argument("ERROR: Pointer to ExamTTSolutionManipulator object is null");
         std::cout << "Building Initial Solution..." << std::endl;
@@ -33,7 +33,8 @@ public:
         }
         return manipulator->getSolution();
     }
-bool random = true;
+
+    bool random = true;
 private:
     bool largeExams = true;
     std::set<int> unscheduledExams;

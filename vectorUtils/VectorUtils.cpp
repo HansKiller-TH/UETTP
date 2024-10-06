@@ -5,14 +5,16 @@
 #include <stdexcept>
 #include <list>
 #include <set>
+#include <iostream>
+#include <optional>
 #include "VectorUtils.h"
 
-std::list<int>
+std::set<int>
 VectorUtils::getIndexesWherePredicate(const std::vector<int> &vec, const std::function<bool(const int &)> &pred) {
-    std::list<int> result;
+    std::set<int> result;
     for (int index = 0; index < vec.size(); ++index)
         if (pred(vec.at(index)))
-            result.push_back(index);
+            result.insert(index);
     return result;
 }
 
@@ -49,10 +51,27 @@ int VectorUtils::indexForValue(const std::vector<int> &vec, const std::string &v
     return indexForValue(vec, val);
 }
 
+std::vector<std::pair<int, int>>
+VectorUtils::getSortedValuesUsingValueAsIndexInSecond(const std::set<int> &valuesAsIndexes,
+                                                      const std::vector<int> &values,
+                                                      const std::function<bool(std::pair<int, int>,
+                                                                               std::pair<int, int>)> &comparator) {
+    std::vector<std::pair<int, int>> result;
+    result.reserve(valuesAsIndexes.size());
+    for (auto &value: valuesAsIndexes)
+        result.emplace_back(value, values.at(value));
+    std::sort(result.begin(), result.end(), comparator);
+    return result;
+}
+
 void
-VectorUtils::binPackingLeastBinsAll(const int &itemSize, const std::vector<std::pair<int, int>> &binIndexAndSize,
-                                    const int &numberOfBinsRequired, std::vector<std::set<int>> &results,
-                                    std::set<int> currentBins, int currentIndex, int currentSum) {
+VectorUtils::binPackingLeastBinsAll(const int &itemSize,
+                                    const std::vector<std::pair<int, int>> &binIndexAndSize,
+                                    const int &numberOfBinsRequired,
+                                    std::vector<std::set<int>> &results,
+                                    std::set<int> currentBins,
+                                    int currentIndex,
+                                    int currentSum) {
     if (currentSum >= itemSize) {
         results.push_back(currentBins);
         return;
@@ -88,15 +107,50 @@ VectorUtils::binPackingSmallestAndLeastBins(const int &itemSize, const int &numb
                                        i + 1, currentSum + binIndexAndSize.at(i).second);
         currentBins.erase(binIndexAndSize.at(i).first); // Backtracking
         // Pruning. Replacing a room with a room of equal size will not yield different sums
-        if (i + 1 < limit && binIndexAndSize.at(i ).second == binIndexAndSize.at(i + 1).second)
-          ++i;
+        if (i + 1 < limit && binIndexAndSize.at(i).second == binIndexAndSize.at(i + 1).second)
+            ++i;
     }
+}
+
+std::vector<std::pair<std::set<int>, int>>
+VectorUtils::binPackingAllBins(const int &itemSize, const std::vector<std::pair<int, int>> &binIndexAndSize,
+                               std::set<int> currentBins, int currentIndex, int currentSum) {
+    std::vector<std::pair<std::set<int>, int>> result;
+    if (currentSum >= itemSize) {
+        result.emplace_back(currentBins, currentSum);
+        return result;
+    }
+    for (int i = currentIndex; i < binIndexAndSize.size(); ++i) {
+        auto index = binIndexAndSize.at(i).first;
+        auto size = binIndexAndSize.at(i).second;
+        currentBins.insert(index);
+        auto subResult = binPackingAllBins(itemSize, binIndexAndSize, currentBins, i + 1, currentSum + size);
+        if (subResult.empty())
+            break;
+        else
+            result.insert(result.end(), subResult.begin(), subResult.end());
+        currentBins.erase(index);
+    }
+    return result;
+}
+
+bool VectorUtils::customComparator(const std::pair<std::set<int>, int> &a, const std::pair<std::set<int>, int> &b) {
+    if (a.first.size() == b.first.size()) {
+        if (a.second == b.second)
+            return *a.first.end() - *a.first.begin() < *b.first.end() - *b.first.begin();
+        return a.second < b.second;
+    }
+    return a.first.size() < b.first.size();
+}
+
+void VectorUtils::sortBinResult(std::vector<std::pair<std::set<int>, int>> &binResult) {
+    std::sort(binResult.begin(), binResult.end(), customComparator);
 }
 
 std::pair<int, int> VectorUtils::getLeastNumberAndSumOfBinsRequired(const int &itemSize,
                                                                     const std::vector<std::pair<int, int>> &binIndexAndSize) {
     if (binIndexAndSize.empty() || itemSize == 0)
-        return {0,0};
+        return {0, 0};
     int numberOfBinsRequired = 0;
     int sum = 0;
     for (auto it = binIndexAndSize.rbegin(); it != binIndexAndSize.rend(); ++it) {
@@ -105,11 +159,28 @@ std::pair<int, int> VectorUtils::getLeastNumberAndSumOfBinsRequired(const int &i
         if (sum >= itemSize)
             return {numberOfBinsRequired, sum};
     }
-    return {0,sum};
+    return {0, sum};
+}
+
+std::optional<std::set<int>>
+VectorUtils::getfirstSubset(const std::set<int> &set,
+                            const std::vector<std::pair<std::set<int>, int>> &binSetsAndSizes) {
+    for (auto &pair: binSetsAndSizes)
+        if (std::includes(set.begin(), set.end(), pair.first.begin(), pair.first.end()))
+            return pair.first;
+    return std::nullopt;
+}
+
+std::set<int> VectorUtils::getIndexesFromBinaryVector(const std::vector<int> &binaryVector, int compareValue) {
+    std::set<int> result;
+    for (int index = 0; index < binaryVector.size(); ++index)
+        if (binaryVector.at(index) == compareValue)
+            result.insert(index);
+    return result;
 }
 
 std::vector<std::pair<std::string, std::set<std::string>>>
-VectorUtils::inLineKeyValues(const std::vector<std::vector<std::string>>& data) {
+VectorUtils::inLineKeyValues(const std::vector<std::vector<std::string>> &data) {
     // We use this to check if we encountered a new key
     // Setting it to a modified version of the first key ensures it will be different
     std::string prev = data.front().front() + "X";
@@ -122,7 +193,7 @@ VectorUtils::inLineKeyValues(const std::vector<std::vector<std::string>>& data) 
         if (row.at(0) != prev) {
             prev = row.at(0);
             // add a new set
-            inLined.emplace_back(std::pair<std::string,std::set<std::string>> (prev,{}));
+            inLined.emplace_back(std::pair<std::string, std::set<std::string>>(prev, {}));
         }
         // We insert the value into the set
         inLined.back().second.insert(row.at(1));

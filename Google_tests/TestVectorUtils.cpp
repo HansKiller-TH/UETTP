@@ -104,7 +104,7 @@ TEST(VectorUtilsTest, TestEmptyBins) {
     std::vector<std::pair<int, int>> binSizes;
 
     auto result = VectorUtils::getLeastNumberAndSumOfBinsRequired(itemSize, binSizes);
-    std::pair<int,int> asserter{0,0};
+    std::pair<int, int> asserter{0, 0};
     ASSERT_EQ(result, asserter);
 }
 
@@ -115,7 +115,7 @@ TEST(VectorUtilsTest, TestSumLessThanItemSize) {
                                                  {3, 3}};
 
     auto result = VectorUtils::getLeastNumberAndSumOfBinsRequired(itemSize, binSizes);
-    std::pair<int,int> asserter{0,6};
+    std::pair<int, int> asserter{0, 6};
     ASSERT_EQ(result, asserter);
 }
 
@@ -126,7 +126,7 @@ TEST(VectorUtilsTest, TestSumEqualToItemSize) {
                                                  {3, 3}};
 
     auto result = VectorUtils::getLeastNumberAndSumOfBinsRequired(itemSize, binSizes);
-    std::pair<int,int> asserter{binSizes.size(),6};
+    std::pair<int, int> asserter{binSizes.size(), 6};
     ASSERT_EQ(result, asserter);
 }
 
@@ -138,54 +138,176 @@ TEST(VectorUtilsTest, TestSumGreaterThanItemSize) {
                                                  {4, 4}};
 
     auto result = VectorUtils::getLeastNumberAndSumOfBinsRequired(itemSize, binSizes);
-    std::pair<int,int> asserter{2,7};
+    std::pair<int, int> asserter{2, 7};
     ASSERT_EQ(result, asserter);
 }
 
-TEST(VectorUtilsTest,TestItemSizeFitFirst){
+TEST(VectorUtilsTest, TestItemSizeFitFirst) {
     int itemSize = 5;
-    std::vector<std::pair<int,int>> binSizes = {{1,5},{2,6},{3,10},{4,50}};
+    std::vector<std::pair<int, int>> binSizes = {{1, 5},
+                                                 {2, 6},
+                                                 {3, 10},
+                                                 {4, 50}};
     auto numAndSumBins = VectorUtils::getLeastNumberAndSumOfBinsRequired(itemSize, binSizes);
     std::set<int> bins;
     VectorUtils::binPackingSmallestAndLeastBins(itemSize, numAndSumBins.first, numAndSumBins.second, binSizes, bins,
                                                 std::set<int>(), 0, 0);
     ASSERT_EQ(bins, std::set<int>{1});
 }
-TEST(VectorUtilsTest,TestItemSizeFitLast){
+
+TEST(VectorUtilsTest, TestItemSizeFitLast) {
     int itemSize = 50;
-    std::vector<std::pair<int,int>> binSizes = {{1,5},{2,6},{3,10},{4,50}};
+    std::vector<std::pair<int, int>> binSizes = {{1, 5},
+                                                 {2, 6},
+                                                 {3, 10},
+                                                 {4, 50}};
     auto numAndSumBins = VectorUtils::getLeastNumberAndSumOfBinsRequired(itemSize, binSizes);
     std::set<int> bins;
     VectorUtils::binPackingSmallestAndLeastBins(itemSize, numAndSumBins.first, numAndSumBins.second, binSizes, bins,
                                                 std::set<int>(), 0, 0);
     ASSERT_EQ(bins, std::set<int>{4});
 }
-TEST(VectorUtilsTest,TestItemSizeFitMiddle){
+
+TEST(VectorUtilsTest, TestItemSizeFitMiddle) {
     int itemSize = 10;
-    std::vector<std::pair<int,int>> binSizes = {{1,5},{2,6},{3,10},{4,50}};
+    std::vector<std::pair<int, int>> binSizes = {{1, 5},
+                                                 {2, 6},
+                                                 {3, 10},
+                                                 {4, 50}};
     auto numAndSumBins = VectorUtils::getLeastNumberAndSumOfBinsRequired(itemSize, binSizes);
     std::set<int> bins;
     VectorUtils::binPackingSmallestAndLeastBins(itemSize, numAndSumBins.first, numAndSumBins.second, binSizes, bins,
                                                 std::set<int>(), 0, 0);
     ASSERT_EQ(bins, std::set<int>{3});
 }
-TEST(VectorUtilsTest,TestItemSizeFitFirstAndLast){
+
+TEST(VectorUtilsTest, TestItemSizeFitFirstAndLast) {
     int itemSize = 64;
-    std::vector<std::pair<int,int>> binSizes = {{1,30},{2,33},{3,33},{4,40}};
+    std::vector<std::pair<int, int>> binSizes = {{1, 30},
+                                                 {2, 33},
+                                                 {3, 33},
+                                                 {4, 40}};
     auto numAndSumBins = VectorUtils::getLeastNumberAndSumOfBinsRequired(itemSize, binSizes);
     std::set<int> bins;
     VectorUtils::binPackingSmallestAndLeastBins(itemSize, numAndSumBins.first, numAndSumBins.second, binSizes, bins,
                                                 std::set<int>(), 0, 0);
-    std::set<int> asserter{2,3};
+    std::set<int> asserter{2, 3};
     ASSERT_EQ(bins, asserter);
 }
-TEST(VectorUtilsTest,TestItemSizeFitLastTwo){
+
+TEST(VectorUtilsTest, TestItemSizeFitLastTwo) {
     int itemSize = 73;
-    std::vector<std::pair<int,int>> binSizes = {{1,30},{2,33},{3,33},{4,40}};
+    std::vector<std::pair<int, int>> binSizes = {{1, 30},
+                                                 {2, 33},
+                                                 {3, 33},
+                                                 {4, 40}};
     auto numAndSumBins = VectorUtils::getLeastNumberAndSumOfBinsRequired(itemSize, binSizes);
     std::set<int> bins;
     VectorUtils::binPackingSmallestAndLeastBins(itemSize, numAndSumBins.first, numAndSumBins.second, binSizes, bins,
                                                 std::set<int>(), 0, 0);
-    std::set<int> asserter{2,4};
+    std::set<int> asserter{2, 4};
     ASSERT_EQ(bins, asserter);
+}
+
+TEST(VectorUtilsTest, BinsAll) {
+    std::vector<std::pair<int, int>> binIndexAndSize = {
+            {7, 80},
+            {6, 30},
+            {5, 20},
+            {4, 15},
+            {3, 10},
+            {2, 7},
+            {1, 6},
+            {0, 5}};
+    auto result = VectorUtils::binPackingAllBins(40, binIndexAndSize);
+    std::vector<std::pair<std::set<int>, int>> asserter = {{{7},             {80}},
+                                                           {{5, 6},          {50}},
+                                                           {{4, 6},          {45}},
+                                                           {{3, 6},          {40}},
+                                                           {{1, 2, 6},       {43}},
+                                                           {{0, 2, 6},       {42}},
+                                                           {{0, 1, 6},       {41}},
+                                                           {{3, 4, 5},       {45}},
+                                                           {{2, 4, 5},       {42}},
+                                                           {{1, 4, 5},       {41}},
+                                                           {{0, 4, 5},       {40}},
+                                                           {{1, 2, 3, 5},    {43}},
+                                                           {{0, 2, 3, 5},    {42}},
+                                                           {{0, 1, 3, 5},    {41}},
+                                                           {{0, 1, 2, 3, 4}, {43}}};
+    ASSERT_EQ(result, asserter);
+}
+
+TEST(VectorUtilsTest, sortBinResult){
+    std::vector<std::pair<int, int>> binIndexAndSize = {
+            {7, 80},
+            {6, 30},
+            {5, 20},
+            {4, 15},
+            {3, 10},
+            {2, 7},
+            {1, 6},
+            {0, 5}};
+    auto result = VectorUtils::binPackingAllBins(40, binIndexAndSize);
+    VectorUtils::sortBinResult(result);
+    std::vector<std::pair<std::set<int>, int>> asserter = {{{7},             {80}},
+                                                           {{3, 6},          {40}},
+                                                           {{4, 6},          {45}},
+                                                           {{5, 6},          {50}},
+                                                           {{0, 4, 5},       {40}},
+                                                           {{1, 4, 5},       {41}},
+                                                           {{0, 1, 6},       {41}},
+                                                           {{2, 4, 5},       {42}},
+                                                           {{0, 2, 6},       {42}},
+                                                           {{1, 2, 6},       {43}},
+                                                           {{3, 4, 5},       {45}},
+                                                           {{0, 1, 3, 5},    {41}},
+                                                           {{0, 2, 3, 5},    {42}},
+                                                           {{1, 2, 3, 5},    {43}},
+                                                           {{0, 1, 2, 3, 4}, {43}}};
+    ASSERT_EQ(result,asserter);
+}
+
+TEST(VectorUtilsTest, getFirstSubset){
+    std::vector<std::pair<int, int>> binIndexAndSize = {
+            {7, 80},
+            {6, 30},
+            {5, 20},
+            {4, 15},
+            {3, 10},
+            {2, 7},
+            {1, 6},
+            {0, 5}};
+    auto binSetsAndSize = VectorUtils::binPackingAllBins(40, binIndexAndSize);
+    VectorUtils::sortBinResult(binSetsAndSize);
+
+    std::set<int> set = {0,1,2,3,4,5,6,7};
+    auto result = VectorUtils::getfirstSubset(set, binSetsAndSize);
+    std::set<int> asserter = {7};
+    ASSERT_EQ(result, asserter);
+
+    set = {0,1,2,3,4,5,6};
+    result = VectorUtils::getfirstSubset(set, binSetsAndSize);
+    asserter = {3,6};
+    ASSERT_EQ(result, asserter);
+
+    set = {0,1,2,3,4,5};
+    result = VectorUtils::getfirstSubset(set, binSetsAndSize);
+    asserter = {0,4,5};
+    ASSERT_EQ(result, asserter);
+
+    set = {0,1,2,3};
+    result = VectorUtils::getfirstSubset(set, binSetsAndSize);
+    ASSERT_FALSE(result.has_value());
+}
+
+TEST(VectorUtilsTest, getValuesIndexSecond){
+    std::set<int> indexes = {0,1,2,3};
+    std::vector<int> values = {5,6,7,8};
+    auto result = VectorUtils::getSortedValuesUsingValueAsIndexInSecond(indexes, values, [](std::pair<int, int> a, std::pair<int, int> b){return a.second > b.second;});
+    std::vector<std::pair<int, int>> asserter = {{3,8},
+                                                 {2,7},
+                                                 {1,6},
+                                                 {0,5}};
+    ASSERT_EQ(result, asserter);
 }

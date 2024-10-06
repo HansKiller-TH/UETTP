@@ -1,13 +1,8 @@
 project(Google_tests)
 add_subdirectory(lib)
 
-#set(SOURCE_TEST_FILES
-#        ${CMAKE_SOURCE_DIR}/vectorUtils/VectorUtils.cpp
-#)
-
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ${CMAKE_SOURCE_DIR})
 add_executable(Google_Tests_run TestExamDataManipulator.cpp TestVectorUtils.cpp
-        ${SOURCE_TEST_FILES}
         TestExamDataPopulator.cpp
         TestExamDataAccdbParser.cpp
         ExamTTSolutionTest.cpp

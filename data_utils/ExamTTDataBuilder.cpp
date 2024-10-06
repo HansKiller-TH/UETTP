@@ -188,6 +188,19 @@ ExamTTDataBuilder ExamTTDataBuilder::createCollisionsFromEnrollment() {
     return *this;
 }
 
+ExamTTDataBuilder ExamTTDataBuilder::createAllPossibleRoomCombinationsForEachExam() {
+    const auto NUMBER_OF_EXAMS = tmp.examID->size();
+    tmp.examsPossibleRoomCombinations = std::vector<std::vector<std::pair<std::set<int>, int>>>(NUMBER_OF_EXAMS);
+    for (int examIndex = 0; examIndex < NUMBER_OF_EXAMS; ++examIndex) {
+        auto validRooms = VectorUtils::getIndexesWherePredicate(tmp.examRoomsValidity.value().at(examIndex), [](const int& a){return a == 1;});
+        auto binIndexAndSize = VectorUtils::getSortedValuesUsingValueAsIndexInSecond(validRooms, tmp.roomSize.value(), [](std::pair<int, int> a, std::pair<int, int> b){return a.second > b.second;});
+        auto roomCombos = VectorUtils::binPackingAllBins(tmp.examSize.value().at(examIndex), binIndexAndSize);
+        VectorUtils::sortBinResult(roomCombos);
+        tmp.examsPossibleRoomCombinations.value().at(examIndex) = roomCombos;
+    }
+    return *this;
+}
+
 std::shared_ptr<ExamTTData> ExamTTDataBuilder::build() {
     return std::make_shared<ExamTTData>(tmp);
 }
