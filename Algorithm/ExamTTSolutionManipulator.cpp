@@ -212,18 +212,6 @@ ExamTTSolutionManipulator::getBestFittingRoomsForExam(const std::pair<int, int> 
     auto availableValidRooms = getAvailableValidRoomsForExam(exam.first, roomsAvailability);
     if (availableValidRooms.empty())
         return {};
-
-    /*auto roomSizes = getRoomsIndexAndSize(availableValidRooms);
-    auto examSize = solution_->examData->examSize.at(exam.first);
-
-    auto numAndSumOfBinsReq = VectorUtils::getLeastNumberAndSumOfBinsRequired(exam.second, roomSizes);
-    if (numAndSumOfBinsReq.first == 0)
-        return {};
-
-    std::set<int> result;
-    VectorUtils::binPackingSmallestAndLeastBins(examSize, numAndSumOfBinsReq.first, numAndSumOfBinsReq.second,
-                                                roomSizes, result);
-    return result;*/
     auto tmp = VectorUtils::getfirstSubset(availableValidRooms, solution_->examData->examsPossibleRoomCombinations.at(exam.first));
     return tmp.has_value()?tmp.value():std::set<int>();
 }
