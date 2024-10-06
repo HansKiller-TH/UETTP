@@ -7,6 +7,7 @@
 #include <utility>
 #include "ExamTTSolutionManipulator.h"
 #include "vectorUtils/VectorUtils.h"
+#include "vectorUtils/RoomAssignment.h"
 #include "screenOutput.h"
 
 
@@ -168,7 +169,7 @@ std::set<int> ExamTTSolutionManipulator::getRandomRoomsForExamInPeriod(const int
     auto availableValidRooms = getAvailableValidRoomsForExamInPeriod(exam, period);
     if (availableValidRooms.empty())
         return {};
-    auto combinations = VectorUtils::getSubsets(availableValidRooms, solution_->examData->examsPossibleRoomCombinations.at(exam), 4);
+    auto combinations = VectorUtils::getSubsets(availableValidRooms, solution_->examData->examsPossibleRoomCombinations.at(exam), 10);
     if(!combinations.has_value())
         return {};
     std::uniform_int_distribution<std::size_t> distrRoom(0, combinations->size() - 1);
@@ -183,28 +184,32 @@ ExamTTSolutionManipulator::getRandomRoomsForExam(const std::pair<int, int> &exam
     auto availableValidRooms = getAvailableValidRoomsForExam(exam.first, roomsAvailability);
     if (availableValidRooms.empty())
         return {};
-    auto roomSizes = getRoomsIndexAndSize(availableValidRooms);
+
+    /*auto roomSizes = getRoomsIndexAndSize(availableValidRooms);
     auto numberOfBinsRequired = VectorUtils::getLeastNumberAndSumOfBinsRequired(exam.second, roomSizes);
     if (numberOfBinsRequired.first == 0)
         return {};
     std::vector<std::set<int>> combinations;
     VectorUtils::binPackingLeastBinsAll(exam.second, roomSizes, numberOfBinsRequired.first, combinations);
     if (combinations.empty())
+        return {};*/
+    auto combinations = VectorUtils::getSubsets(availableValidRooms, solution_->examData->examsPossibleRoomCombinations.at(exam.first), 10);
+    if(!combinations.has_value())
         return {};
-    std::uniform_int_distribution<std::size_t> distrRoom(0, combinations.size() - 1);
+    std::uniform_int_distribution<std::size_t> distrRoom(0, combinations->size() - 1);
     auto roomCombinationIndex = distrRoom(gen);
-    return combinations.at(roomCombinationIndex);
+    return combinations->at(roomCombinationIndex);
 }
 
 std::set<int>
-ExamTTSolutionManipulator::getBestFittingRoomsForExam(const std::pair<int, int> &exam,
+ExamTTSolutionManipulator::getBestFittingRoomsForExam(const int exam,
                                                       const std::vector<int> &roomsAvailability) {
-    if (exam.first < 0 || roomsAvailability.empty())
+    if (exam < 0 || roomsAvailability.empty())
         return {};
-    auto availableValidRooms = getAvailableValidRoomsForExam(exam.first, roomsAvailability);
+    auto availableValidRooms = getAvailableValidRoomsForExam(exam, roomsAvailability);
     if (availableValidRooms.empty())
         return {};
-    auto tmp = VectorUtils::getfirstSubset(availableValidRooms, solution_->examData->examsPossibleRoomCombinations.at(exam.first));
+    auto tmp = VectorUtils::getfirstSubset(availableValidRooms, solution_->examData->examsPossibleRoomCombinations.at(exam));
     return tmp.has_value()?tmp.value():std::set<int>();
 }
 
@@ -237,16 +242,13 @@ bool ExamTTSolutionManipulator::trySwitchUsedRooms(const int &periodFirst, const
     return true;
 }
 
-bool ExamTTSolutionManipulator::tryAssignBestFitRoomsForEachExamInOtherPeriod(const std::set<int> &examsFirst,
-                                                                              const int &firstPeriod,
-                                                                              const std::set<int> &examsSecond,
-                                                                              const int &secondPeriod) {
-    auto roomsAvailabilityFirst = getPeriodRoomsAvailabilityFreed(firstPeriod);
-    auto roomsAvailabilitySecond = getPeriodRoomsAvailabilityFreed(secondPeriod);
-    auto examsSizesFirst = getExamsIndexAndSize(examsFirst);
-    auto examsSizesSecond = getExamsIndexAndSize(examsSecond);
+bool ExamTTSolutionManipulator::tryAssignBestFitRoomsForEachExamInOtherPeriod(const RoomAssignment &first,
+                                                                              const RoomAssignment &second) {
+    auto roomsAvailabilityFirst = getPeriodRoomsAvailabilityWithout(first.period, first.vacateRooms);
+    auto roomsAvailabilitySecond = getPeriodRoomsAvailabilityWithout(second.period, second.vacateRooms);
+
     std::vector<std::pair<int, std::set<int>>> examRoomsFirst;
-    for (auto &exam: examsSizesFirst) {
+    for (auto &exam: first.assignRooms) {
         auto rooms = getBestFittingRoomsForExam(exam, roomsAvailabilityFirst);
         if (rooms.empty())
             return false;
@@ -257,11 +259,11 @@ bool ExamTTSolutionManipulator::tryAssignBestFitRoomsForEachExamInOtherPeriod(co
                 throw std::runtime_error("tried assigning an unavailable room");
             roomsAvailabilityFirst.at(room) = 0;
         }
-        examRoomsFirst.emplace_back(exam.first, rooms);
+        examRoomsFirst.emplace_back(exam, rooms);
     }
 
     std::vector<std::pair<int, std::set<int>>> examRoomsSecond;
-    for (auto &exam: examsSizesSecond) {
+    for (auto &exam: second.assignRooms) {
         auto rooms = getBestFittingRoomsForExam(exam, roomsAvailabilitySecond);
         if (rooms.empty())
             return false;
@@ -272,19 +274,19 @@ bool ExamTTSolutionManipulator::tryAssignBestFitRoomsForEachExamInOtherPeriod(co
                 throw std::runtime_error("tried assigning an unavailable room");
             roomsAvailabilitySecond.at(room) = 0;
         }
-        examRoomsSecond.emplace_back(exam.first, rooms);
+        examRoomsSecond.emplace_back(exam, rooms);
     }
 
     for (auto &pair: examRoomsFirst) {
         solution_->examRooms.at(pair.first) = pair.second;
     }
-    solution_->periodRoomsAvailability.at(firstPeriod) = roomsAvailabilityFirst;
+    solution_->periodRoomsAvailability.at(first.period) = roomsAvailabilityFirst;
 
     for (auto &pair: examRoomsSecond) {
         solution_->examRooms.at(pair.first) = pair.second;
     }
-    if (secondPeriod > -1)
-        solution_->periodRoomsAvailability.at(secondPeriod) = roomsAvailabilitySecond;
+    if (second.period > -1)
+        solution_->periodRoomsAvailability.at(second.period) = roomsAvailabilitySecond;
     return true;
 }
 
@@ -345,7 +347,7 @@ ExamTTSolutionManipulator::tryAssignBestFittingRoomsForEachExamInPeriodWithout(c
     auto roomsAvailability = getPeriodRoomsAvailabilityWithout(period, without);
     auto examsSizes = getExamsIndexAndSize(exams);
     std::vector<std::pair<int, std::set<int>>> examRooms;
-    for (auto &exam: examsSizes) {
+    for (auto &exam: exams) {
         auto rooms = getBestFittingRoomsForExam(exam, roomsAvailability);
         if (rooms.empty())
             return false;
@@ -356,21 +358,13 @@ ExamTTSolutionManipulator::tryAssignBestFittingRoomsForEachExamInPeriodWithout(c
                 throw std::runtime_error("tried assigning an unavailable room");
             roomsAvailability.at(room) = 0;
         }
-        examRooms.emplace_back(exam.first, rooms);
+        examRooms.emplace_back(exam, rooms);
     }
     for (auto &pair: examRooms) {
         solution_->examRooms.at(pair.first) = pair.second;
     }
     solution_->periodRoomsAvailability.at(period) = roomsAvailability;
     return true;
-}
-
-bool ExamTTSolutionManipulator::tryAssignBestFittingRoomsForEachExamInPeriod(const std::set<int> &exams, const int &period) {
-    if (exams.empty() || period < 0)
-        return false;
-    auto examsAll = solution_->periodExams.at(period);
-    examsAll.insert(exams.begin(), exams.end());
-    return tryAssignBestFitRoomsForEachExamInOtherPeriod(examsAll, period, {}, -1);
 }
 
 bool ExamTTSolutionManipulator::tryAssignRandomRoomsForEachExamInPeriod(const std::set<int> &exams, const int &period) {

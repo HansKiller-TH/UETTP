@@ -89,7 +89,7 @@ TEST_F(ExamDataManipulatorTest, getBestFittingRoomsForExamTest) {
     solution->periodRoomsAvailability = {{1, 1, 1, 1, -1}};
     manipulator.setSolution(solution);
     std::set<int> asserter = {1, 2};
-    auto result = manipulator.getBestFittingRoomsForExam({0,11}, {1, 1, 1, 1, -1});
+    auto result = manipulator.getBestFittingRoomsForExam(0, {1, 1, 1, 1, -1});
     ASSERT_EQ(result, asserter);
 }
 

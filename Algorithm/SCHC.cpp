@@ -131,7 +131,7 @@ bool SCHC::roomMove() {
         auto exams = manipulator_->getExamsInPeriod(period);
         if (exams.empty())
             return false;
-        manipulator_->tryAssignBestFitRoomsForEachExamInOtherPeriod(exams, period, {}, -1);
+        manipulator_->tryAssignBestFitRoomsForEachExamInOtherPeriod(RoomAssignment(period, exams, exams));
         return true;
     }
 }
@@ -149,14 +149,9 @@ bool SCHC::shiftMove() {
     auto examsSecond = manipulator_->getExamsInPeriod(periodSecond);
 
     manipulator_->kempeChain(displacedFirst, displacedSecond, examsFirst, examsSecond);
-    examsFirst.insert(displacedSecond.begin(), displacedSecond.end());
-    examsSecond.insert(displacedFirst.begin(), displacedFirst.end());
-    if (random) {
-        return trySwap(displacedFirst, periodSecond, displacedSecond, periodFirst);
-    } else {
-        return trySwap(examsFirst, periodFirst, examsSecond, periodSecond);
-    }
-
+    RoomAssignment first(periodFirst, displacedSecond, displacedFirst);
+    RoomAssignment second(periodSecond, displacedFirst, displacedSecond);
+    return trySwap(first, second);
 }
 
 bool SCHC::swapMove() {
@@ -174,13 +169,9 @@ bool SCHC::swapMove() {
     auto examsSecond = manipulator_->getExamsInPeriodWithout(displacedSecond);
 
     manipulator_->kempeChain(displacedFirst, displacedSecond, examsFirst, examsSecond);
-    examsFirst.insert(displacedSecond.begin(), displacedSecond.end());
-    examsSecond.insert(displacedFirst.begin(), displacedFirst.end());
-    if (random) {
-        return trySwap(displacedFirst, periodSecond, displacedSecond, periodFirst);
-    } else {
-        return trySwap(examsFirst, periodFirst, examsSecond, periodSecond);
-    }
+    RoomAssignment first(periodFirst, displacedSecond, displacedFirst);
+    RoomAssignment second(periodSecond, displacedFirst, displacedSecond);
+    return trySwap(first, second);
 }
 
 bool SCHC::slotMove() {
@@ -206,24 +197,22 @@ bool SCHC::slotMove() {
     return true;
 }
 
-bool SCHC::trySwap(const std::set<int> &displacedFirst, int periodSecond, const std::set<int> &displacedSecond,
-                   int periodFirst) {
-    if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(displacedFirst, periodSecond))
+bool SCHC::trySwap(const RoomAssignment &first, const RoomAssignment &second) {
+    if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(first.assignRooms, first.period))
         return false;
-    if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(displacedSecond, periodFirst))
+    if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(second.assignRooms, second.period))
         return false;
     if (random) {
-        if (!manipulator_->tryAssignRandomRoomsForEachExamInOtherPeriod(displacedSecond, periodFirst,
-                                                                        displacedFirst, periodSecond))
+        if (!manipulator_->tryAssignRandomRoomsForEachExamInOtherPeriod(first.assignRooms, first.period,
+                                                                        second.assignRooms, second.period))
             return false;
     } else {
-        if (!manipulator_->tryAssignBestFitRoomsForEachExamInOtherPeriod(displacedSecond, periodFirst,
-                                                                         displacedFirst, periodSecond))
+        if (!manipulator_->tryAssignBestFitRoomsForEachExamInOtherPeriod(first, second))
             return false;
     }
 
-    manipulator_->moveExamsToPeriod(displacedFirst, periodSecond);
-    manipulator_->moveExamsToPeriod(displacedSecond, periodFirst);
+    manipulator_->moveExamsToPeriod(second.assignRooms, second.period);
+    manipulator_->moveExamsToPeriod(first.assignRooms, first.period);
     return true;
 }
 

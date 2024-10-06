@@ -10,6 +10,7 @@
 #include <memory>
 #include "data_utils/ExamTTData.h"
 #include "data_utils/ExamTTSolution.h"
+#include "vectorUtils/RoomAssignment.h"
 
 /**
  * @class ExamTTSolutionManipulator
@@ -114,7 +115,7 @@ public:
 
     std::set<int> getRandomRoomsForExamInPeriod(const int &exam, const int &period);
 
-    std::set<int> getBestFittingRoomsForExam(const std::pair<int, int> &exam, const std::vector<int> &roomsAvailability);
+    std::set<int> getBestFittingRoomsForExam(int exam, const std::vector<int> &roomsAvailability);
 
     std::set<int> getRandomRoomsForExam(const std::pair<int, int> &exam, const std::vector<int> &roomsAvailability);
 
@@ -185,7 +186,7 @@ public:
      *
      * @throws std::runtime_error if an invalid room is assigned or an unavailable room is assigned.
      */
-    bool tryAssignBestFitRoomsForEachExamInOtherPeriod(const std::set<int> &examsFirst, const int &firstPeriod, const std::set<int> &examsSecond, const int &secondPeriod);
+    bool tryAssignBestFitRoomsForEachExamInOtherPeriod(const RoomAssignment &first, const RoomAssignment &second = RoomAssignment());
 
     /**
      * @brief Tries to assign random rooms to each exam in a given period.

@@ -35,7 +35,7 @@ bool InitialSolution::scheduleExam(const std::set<int> &exams) {
             if (!manipulator->tryAssignRandomRoomsForEachExamInPeriod(exams, period))
                 continue;
         } else {
-            if (!manipulator->tryAssignBestFittingRoomsForEachExamInPeriod(exams, period))
+            if (!manipulator->tryAssignBestFitRoomsForEachExamInOtherPeriod(RoomAssignment(period, exams)))
                 continue;
         }
         manipulator->moveExamsToPeriod(exams, period);

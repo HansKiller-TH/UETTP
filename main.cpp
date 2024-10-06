@@ -11,7 +11,7 @@ int main() {
     // Number of maximum concurrent threads
     const int max_concurrent_threads = 15;
     // Number of total threads
-    const int num_threads = 1;
+    const int num_threads = 15;
 
     // Logger will store all solutions
     ExamDataLogger logger;
@@ -36,7 +36,7 @@ int main() {
     }
     // Create an Initial solution_ object that uses the ExamTTSolutionManipulator to create an initial solution_
     InitialSolution initialSolution(examDataPtr);
-    initialSolution.random = true;
+    initialSolution.random = false;
     auto solution = initialSolution.build();
     // The ExamTTData object now has an initial solution_ if any
     if (solution == nullptr) {
@@ -49,12 +49,12 @@ int main() {
         std::cout << std::to_string(i) << std::endl;
         auto algo = std::make_shared<SCHC>(std::make_shared<ExamTTSolution>(solution->deepCopy()));
         algo->stopTime = 0.0;
-        algo->random = true;
+        algo->random = false;
         algo->fullCollisionCost = true;
         algo->schc_all = true;
         algo->schc_acp = false;
         algo->schc_imp = false;
-        algo->counterLimit = 500;
+        algo->counterLimit = 6186;
         // Use std::async to run the function in a separate thread and get a future to its result
         futures.push_back(std::async(std::launch::async, [algo]() { return algo->run(); }));
         if ((i + 1) % max_concurrent_threads == 0 || i == num_threads - 1) {
