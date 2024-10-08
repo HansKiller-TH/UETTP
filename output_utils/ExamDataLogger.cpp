@@ -7,11 +7,11 @@
 #include "file_utils/TxtFileHandler.h"
 #include "data_utils/ExamTTSolution.h"
 
-void ExamDataLogger::add(std::shared_ptr<ExamTTSolution> solution) {
-    solutions.insert(solution);
+void ExamDataLogger::add(const std::shared_ptr<ExamTTSolution>& solution) {
+    solutions.emplace_back(solution);
 }
 
-std::multiset<std::shared_ptr<ExamTTSolution>> ExamDataLogger::getData() {
+std::vector<std::shared_ptr<ExamTTSolution>> ExamDataLogger::getData() {
     return solutions;
 }
 

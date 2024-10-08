@@ -22,7 +22,8 @@ int main() {
     // Open an Open-File-Dialog to get a file path from the user
     std::string filepath = openFileDialog();
     if (filepath.empty()) {
-        std::cout << "File is already used by a different program or you entered an empty file path, please check and try again.\n";
+        std::cout
+                << "File is already used by a different program or you entered an empty file path, please check and try again.\n";
         return 1;
     }
     // print filepath to console
@@ -69,8 +70,12 @@ int main() {
     }
     // Get the best solution_ from a multiset sorted by cost asc
     auto result = logger.getData();
+    std::sort(result.begin(), result.end(),
+              [](const std::shared_ptr<ExamTTSolution> &lhs, const std::shared_ptr<ExamTTSolution> &rhs) {
+                  return lhs->cost < rhs->cost;
+              });
     // Export the solution_ to the original filepath the ExamTTData was created from
-    ExamTTFileManager::exportExamTTSolution(result);
+    ExamTTFileManager::exportExamTTSolution(result.front());
     logger.reset();
 
     return 0;
