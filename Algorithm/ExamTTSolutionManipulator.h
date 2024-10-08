@@ -269,6 +269,22 @@ public:
     [[nodiscard]] std::set<int> getAllExams() const;
 
     /**
+     * @brief Get the valid exam periods for a set of exams.
+     *
+     * This function takes a set of exams and returns the valid periods for those exams.
+     * The validity information for each exam is fetched from the examData_ member variable
+     * and the valid periods are determined based on the validity values.
+     *
+     * @param exams The set of exams for which to get the valid periods.
+     * @return A set of integers representing the valid periods for the given exams.
+     *
+     * @note The validity information for each exam is stored in the examData_->examPeriodsValidity map
+     * where each exam is associated with a vector of validity values. A validity value of 1 indicates
+     * that the corresponding period is valid for the exam.
+     */
+    std::set<int> getValidPeriodsForExams(const std::set<int> &exams);
+
+    /**
      * @brief Calculates the previous period with the same day as the given period.
      *
      * This function checks if the given period is valid and if the day of the previous
@@ -290,22 +306,6 @@ public:
      * @return An integer representing the index of the next period on the same day, or -1 if no such period exists.
      */
     int getNextPeriodSameDay(const int &period);
-
-    /**
-     * @brief Get the valid exam periods for a set of exams.
-     *
-     * This function takes a set of exams and returns the valid periods for those exams.
-     * The validity information for each exam is fetched from the examData_ member variable
-     * and the valid periods are determined based on the validity values.
-     *
-     * @param exams The set of exams for which to get the valid periods.
-     * @return A set of integers representing the valid periods for the given exams.
-     *
-     * @note The validity information for each exam is stored in the examData_->examPeriodsValidity map
-     * where each exam is associated with a vector of validity values. A validity value of 1 indicates
-     * that the corresponding period is valid for the exam.
-     */
-    std::set<int> getValidPeriodsForExams(const std::set<int> &exams);
 
 private:
     std::shared_ptr<ExamTTSolution> solution_;
