@@ -50,11 +50,9 @@ public:
 
     static void sortBinResult(std::vector<std::pair<std::set<int>, int>> &binResult);
 
-    static std::optional<std::set<int>>
-    getfirstSubset(const std::set<int> &set, const std::vector<std::pair<std::set<int>, int>> &binSetsAndSizes);
-
     static std::optional<std::vector<std::set<int>>>
-    getSubsets(const std::set<int> &set, const std::vector<std::pair<std::set<int>, int>> &binSetsAndSizes, const int& number = 1);
+    getSubsets(const std::set<int> &set, const std::vector<std::pair<std::set<int>, int>> &binSetsAndSizes,
+               int limit = 0);
 
     static std::set<int> getIndexesFromBinaryVector(const std::vector<int> &binaryVector, int compareValue);
 

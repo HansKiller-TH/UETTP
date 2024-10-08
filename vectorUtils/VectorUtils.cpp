@@ -11,27 +11,21 @@
 
 std::set<int>
 VectorUtils::getIndexesWherePredicate(const std::vector<int> &vec, const std::function<bool(const int &)> &pred) {
-    std::set<int> result;
-    for (int index = 0; index < vec.size(); ++index)
-        if (pred(vec.at(index)))
-            result.insert(index);
-    return result;
+    return getIndexesWherePredicateAllOf(std::vector<std::vector<int>>{vec}, pred);
 }
 
 std::set<int>
 VectorUtils::getIndexesWherePredicateAllOf(const std::vector<std::vector<int>> &vecs,
                                            const std::function<bool(const int &)> &pred) {
-    for (int i = 0; i < vecs.size() - 1; ++i) {
+    for (int i = 0; i < vecs.size() - 1; ++i)
         if (vecs.at(i).size() != vecs.at(i + 1).size())
             throw std::runtime_error("Vectors have different sizes");
-    }
+
     std::set<int> result;
-    for (int index = 0; index < vecs.front().size(); ++index) {
-        bool push = std::all_of(vecs.begin(), vecs.end(),
-                                [&pred, &index](const std::vector<int> &vec) { return pred(vec.at(index)); });
-        if (push)
+    for (int index = 0; index < vecs.front().size(); ++index)
+        if (std::all_of(vecs.begin(), vecs.end(),
+                        [&pred, &index](const std::vector<int> &vec) { return pred(vec.at(index)); }))
             result.insert(index);
-    }
     return result;
 }
 
@@ -143,6 +137,17 @@ bool VectorUtils::customComparator(const std::pair<std::set<int>, int> &a, const
     return a.first.size() < b.first.size();
 }
 
+/**
+ * @brief Sorts a vector of pairs where each pair consists of a set of integers and an integer value.
+ *
+ * This function sorts the vector `binResult` in place, using a custom comparator. The custom comparator
+ * sorts primarily by the size of the set in ascending order. If the sizes of the sets are equal,
+ * comparison is done based on the integer value in ascending order. If both the sizes of the sets and
+ * the integer values are equal, then the difference between the largest and smallest elements in the
+ * set is used as a tie-breaker.
+ *
+ * @param binResult A reference to the vector of pairs to be sorted.
+ */
 void VectorUtils::sortBinResult(std::vector<std::pair<std::set<int>, int>> &binResult) {
     std::sort(binResult.begin(), binResult.end(), customComparator);
 }
@@ -162,26 +167,31 @@ std::pair<int, int> VectorUtils::getLeastNumberAndSumOfBinsRequired(const int &i
     return {0, sum};
 }
 
-std::optional<std::set<int>>
-VectorUtils::getfirstSubset(const std::set<int> &set,
-                            const std::vector<std::pair<std::set<int>, int>> &binSetsAndSizes) {
-    for (auto &pair: binSetsAndSizes)
-        if (std::includes(set.begin(), set.end(), pair.first.begin(), pair.first.end()))
-            return pair.first;
-    return std::nullopt;
-}
-
+/**
+ * Retrieves a specified number of subsets from the provided set that meet certain inclusion criteria.
+ *
+ * This method iterates over a vector of pairs containing sets and corresponding integer values.
+ * For each pair, it checks if the first set of the pair is a subset of the provided set.
+ * If it is, the subset is added to the result. The process continues until the specified number
+ * of subsets is collected or all pairs have been checked.
+ *
+ * @param set The main set from which subsets are to be derived.
+ * @param binSetsAndSizes A vector containing pairs of sets and their corresponding integer values.
+ * @param limit The number of subsets to retrieve.
+ *
+ * @return An optional vector containing the subsets that meet the criteria. If no valid subsets are found, returns an empty optional.
+ */
 std::optional<std::vector<std::set<int>>>
 VectorUtils::getSubsets(const std::set<int> &set, const std::vector<std::pair<std::set<int>, int>> &binSetsAndSizes,
-                        const int& number) {
+                        int limit) {
     std::optional<std::vector<std::set<int>>> result;
-    for (const auto& pair:binSetsAndSizes) {
-        if (!std::includes(set.begin(),set.end(), pair.first.begin(), pair.first.end()))
+    for (const auto &pair: binSetsAndSizes) {
+        if (!std::includes(set.begin(), set.end(), pair.first.begin(), pair.first.end()))
             continue;
-        if(!result.has_value())
+        if (!result.has_value())
             result = std::vector<std::set<int>>{};
         result->emplace_back(pair.first);
-        if (result->size() == number)
+        if (result->size() == limit)
             return result;
     }
     return result;

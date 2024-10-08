@@ -15,14 +15,14 @@ protected:
     }
 };
 
-TEST_F(ExamDataManipulatorTest,setDataTest){
+TEST_F(ExamDataManipulatorTest, setDataTest) {
     ExamTTDataTMP tmp;
     tmp.examID.value() = {1};
     auto examTTData = std::make_shared<ExamTTData>(tmp);
     auto solution = std::make_shared<ExamTTSolution>(examTTData);
     manipulator.setSolution(solution);
     auto old = manipulator.getSolution();
-    ASSERT_EQ(manipulator.getSolution(),old);
+    ASSERT_EQ(manipulator.getSolution(), old);
 }
 
 TEST_F(ExamDataManipulatorTest, getRandomExamTest) {
@@ -60,133 +60,17 @@ TEST_F(ExamDataManipulatorTest, getRandomExamWithConnectedWithPeriodTest) {
     ASSERT_EQ(result, asserter);
 }
 
-TEST_F(ExamDataManipulatorTest, getRandomRoomsForExamInPeriodTest) {
-    ExamTTDataBuilder builder("");
-    builder.tmp.examID.value() = {69};
-    builder.tmp.examSize.value() = {11};
-    builder.tmp.roomSize.value() = {4, 5, 7, 20, 50};
-    builder.tmp.examRoomsValidity.value() = {{1, 1, 1, 0, 1}};
-    builder.createAllPossibleRoomCombinationsForEachExam();
-    auto examTTData = std::make_shared<ExamTTData>(builder.tmp);
-    auto solution = std::make_shared<ExamTTSolution>(examTTData);
-    solution->periodRoomsAvailability = {{1, 1, 1, 0, -1}};
-    manipulator.setSolution(solution);
-    std::set<int> asserterOne = {0, 2};
-    std::set<int> asserterTwo = {1, 2};
-    auto result = manipulator.getRandomRoomsForExamInPeriod(0, 0);
-    ASSERT_TRUE(result == asserterOne || result == asserterTwo);
-}
-
-TEST_F(ExamDataManipulatorTest, getBestFittingRoomsForExamTest) {
-    ExamTTDataBuilder builder("");
-    builder.tmp.examID.value() = {69};
-    builder.tmp.examSize.value() = {11};
-    builder.tmp.roomSize.value() = {4, 5, 6, 7, 50};
-    builder.tmp.examRoomsValidity.value() = {{1, 1, 1, 1, 1}};
-    builder.createAllPossibleRoomCombinationsForEachExam();
-    auto examTTData = std::make_shared<ExamTTData>(builder.tmp);
-    auto solution = std::make_shared<ExamTTSolution>(examTTData);
-    solution->periodRoomsAvailability = {{1, 1, 1, 1, -1}};
-    manipulator.setSolution(solution);
-    std::set<int> asserter = {1, 2};
-    auto result = manipulator.getBestFittingRoomsForExam(0, {1, 1, 1, 1, -1});
-    ASSERT_EQ(result, asserter);
-}
-
-TEST_F(ExamDataManipulatorTest, reassignRoomsToExamSamePeriodTest) {
-    ExamTTDataTMP examDataTMP;
-    auto examTTData = std::make_shared<ExamTTData>(examDataTMP);
-    auto solution = std::make_shared<ExamTTSolution>(examTTData);
-    solution->examPeriod = {0};
-    solution->examRooms = {{0, 1, 2}};
-    solution->periodRoomsAvailability = {{0, 0, 0, 1, 1, 1, -1}};
-    manipulator.setSolution(solution);
-    std::set<int> newRooms = {3, 4, 5};
-    manipulator.reassignRoomsToExamSamePeriod(0, newRooms);
-    std::vector<std::vector<int>> asserter = {{1, 1, 1, 0, 0, 0, -1}};
-    ASSERT_EQ(manipulator.getSolution()->periodRoomsAvailability, asserter);
-}
-
 TEST_F(ExamDataManipulatorTest, trySwitchUsedRoomsTest) {
     ExamTTDataTMP examDataTMP;
     auto examTTData = std::make_shared<ExamTTData>(examDataTMP);
     auto solution = std::make_shared<ExamTTSolution>(examTTData);
     solution->periodRoomsAvailability = {{0, 1, -1, 1,  0, -1, 1},
-                                            {1, 0, 1,  -1, 0, -1, 1}};
+                                         {1, 0, 1,  -1, 0, -1, 1}};
     manipulator.setSolution(solution);
     std::vector<std::vector<int>> asserter = {{1, 0, -1, 1,  0, -1, 1},
                                               {0, 1, 1,  -1, 0, -1, 1}};
     manipulator.trySwitchUsedRooms(0, 1);
     ASSERT_EQ(manipulator.getSolution()->periodRoomsAvailability, asserter);
-}
-
-TEST_F(ExamDataManipulatorTest, tryAssignBestFittingRoomsForEachExamInPeriodWithoutTest) {
-    ExamTTDataBuilder builder("");
-    builder.tmp.examID = {69,68,67,66,65,64,63};
-    builder.tmp.roomSize.value() = {5, 6, 7, 8, 9, 12};
-    builder.tmp.examSize.value() = {4, 5, 6, 7, 8, 9, 10};
-    builder.tmp.examRoomsValidity.value() = {{1, 1, 1, 1, 1, 1},
-                                      {1, 1, 1, 1, 1, 1},
-                                      {1, 1, 1, 1, 1, 1},
-                                      {1, 1, 1, 1, 1, 1},
-                                      {1, 1, 1, 1, 1, 1},
-                                      {1, 1, 1, 1, 1, 1},
-                                      {1, 1, 1, 1, 1, 1}};
-    builder.createAllPossibleRoomCombinationsForEachExam();
-    auto examTTData = std::make_shared<ExamTTData>(builder.tmp);
-    auto solution = std::make_shared<ExamTTSolution>(examTTData);
-    solution->examRooms = {{},
-                              {2},
-                              {3},
-                              {4},
-                              {4},
-                              {5},
-                              {}};
-    solution->periodRoomsAvailability = {{-1, 1, 1, 1, 0, 0}};
-    manipulator.setSolution(solution);
-    std::set<int> exams = {1, 2, 3};
-    int period = 0;
-    std::set<int> without = {4, 5};
-    ASSERT_TRUE(manipulator.tryAssignBestFittingRoomsForEachExamInPeriodWithout(exams, period, without));
-    std::vector<std::vector<int>> asserterPeriodRoomsAvailability = {{-1, 0, 0, 0, 1, 1}};
-    std::vector<std::set<int>> asserterExamRooms = {{},
-                                                    {3},
-                                                    {1},
-                                                    {2},
-                                                    {4},
-                                                    {5},
-                                                    {}};
-    ASSERT_EQ(manipulator.getSolution()->periodRoomsAvailability, asserterPeriodRoomsAvailability);
-    ASSERT_EQ(manipulator.getSolution()->examRooms, asserterExamRooms);
-}
-TEST_F(ExamDataManipulatorTest, tryAssignBestFittingRoomsForEachExamInPeriodWithout_NotEnoughRoom_Test) {
-    ExamTTDataBuilder builder("");
-    builder.tmp.examID.value() = {69,68,67,66,65,64,63};
-    builder.tmp.roomSize.value() = {5, 6, 7, 8, 9, 12};
-    builder.tmp.examSize.value() = {4, 5, 6, 7, 8, 9, 10};
-    builder.tmp.examRoomsValidity.value() = {{1, 1, 1, 1, 1, 1},
-                                      {1, 1, 1, 1, 1, 1},
-                                      {1, 1, 1, 1, 1, 1},
-                                      {1, 1, 1, 1, 1, 1},
-                                      {1, 1, 1, 1, 1, 1},
-                                      {1, 1, 1, 1, 1, 1},
-                                      {1, 1, 1, 1, 1, 1}};
-    builder.createAllPossibleRoomCombinationsForEachExam();
-    auto examTTData = std::make_shared<ExamTTData>(builder.tmp);
-    auto solution = std::make_shared<ExamTTSolution>(examTTData);
-    solution->periodRoomsAvailability = {{-1, -1, -1, -1, 0, 0}};
-    solution->examRooms = {{},
-                              {2},
-                              {3},
-                              {4},
-                              {4},
-                              {5},
-                              {}};
-    manipulator.setSolution(solution);
-    std::set<int> exams = {1, 2, 3};
-    int period = 0;
-    std::set<int> without = {4, 5};
-    ASSERT_FALSE(manipulator.tryAssignBestFittingRoomsForEachExamInPeriodWithout(exams, period, without));
 }
 
 TEST_F(ExamDataManipulatorTest, moveExamToPeriodTest) {
@@ -295,17 +179,6 @@ TEST_F(ExamDataManipulatorTest, getAllExamsTest) {
     ASSERT_EQ(result, asserter);
 }
 
-TEST_F(ExamDataManipulatorTest, getNumberOfPeriodsTest) {
-    ExamTTDataTMP examDataTMP;
-    examDataTMP.periodID.value() = {12, 45, 100, 3, 2};
-    auto examTTData = std::make_shared<ExamTTData>(examDataTMP);
-    auto solution = std::make_shared<ExamTTSolution>(examTTData);
-    manipulator.setSolution(solution);
-    auto result = manipulator.getNumberOfPeriods();
-    int asserter = 5;
-    ASSERT_EQ(result, asserter);
-}
-
 TEST_F(ExamDataManipulatorTest, getNextPeriodSameDayTest) {
     ExamTTDataTMP examDataTMP;
     examDataTMP.periodDay.value() = {4, 5, 5, 5, 6};
@@ -382,8 +255,8 @@ TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_NonePeriod_Test) {
 TEST_F(ExamDataManipulatorTest, getValidPeriodsForExamsTest) {
     ExamTTDataTMP examDataTMP;
     examDataTMP.examPeriodsValidity = {{0, 1, 0, 1, 0},
-                                        {0, 1, 1, 0, 0},
-                                        {0, 1, 0, 0, 0}};
+                                       {0, 1, 1, 0, 0},
+                                       {0, 1, 0, 0, 0}};
     auto examTTData = std::make_shared<ExamTTData>(examDataTMP);
     auto solution = std::make_shared<ExamTTSolution>(examTTData);
     manipulator.setSolution(solution);

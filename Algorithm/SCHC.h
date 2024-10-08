@@ -75,7 +75,7 @@ private:
     bool isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(const std::set<int> &exams, const int &period);
 
     bool
-    trySwap(const RoomAssignment &first, const RoomAssignment &second);
+    trySwap(const PeriodChange &first, const PeriodChange &second);
 
     [[nodiscard]] bool notConverged() const;
 
