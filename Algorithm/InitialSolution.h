@@ -35,6 +35,7 @@ public:
     }
 
     bool random = true;
+    int randomSampleSize = 0;
 private:
     bool largeExams = true;
     std::set<int> unscheduledExams;

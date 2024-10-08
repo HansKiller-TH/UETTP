@@ -35,6 +35,7 @@ public:
     bool schc_imp = false;
     /** assign random or best fitting rooms */
     bool random = true;
+    int randomSampleSize = 0;
     /** Calculate cost with full collision matrix or collisions limited to students with enrollment of max 7 exams.
      * Hard constraints are unaffected*/
     bool fullCollisionCost = false;

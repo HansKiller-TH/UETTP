@@ -32,7 +32,6 @@ bool InitialSolution::scheduleExam(const std::set<int> &exams) {
             continue;
         if (manipulator->hasAnyExamCollisionWithPeriod(exams, manipulator->getNextPeriodSameDay(period)))
             continue;
-        int randomSampleSize = random ? 0 : 1;
         if (!manipulator->tryAssignRandomRoomsForEachExamInOtherPeriod(randomSampleSize, change))
             continue;
         manipulator->moveExamsToPeriod(exams, period);

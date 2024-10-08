@@ -86,7 +86,7 @@ std::string SCHC::getConfig() const {
         result += "acp_";
     if (schc_imp)
         result += "imp_";
-    result += random ? "rand_" : "fit_";
+    result += randomSampleSize == 1 ? "fit_" : "rand_";
     if(!fullCollisionCost)
         result += "limit_";
     result += "Lc" + std::to_string(counterLimit) + "_";
@@ -97,7 +97,7 @@ std::string SCHC::getConfig() const {
 
 bool SCHC::createCandidateSolution() {
     // if random is false we want to assign fitting rooms to the exams and do not need the roomMove
-    int min = random ? 0 : 1;
+    int min = randomSampleSize == 1 ? 1 : 0;
     std::uniform_int_distribution<> distr(min, 3);
     int rand = distr(gen_);
     switch (rand) {
@@ -120,7 +120,6 @@ bool SCHC::createCandidateSolution() {
 
 bool SCHC::roomMove() {
     auto randExam = manipulator_->getRandomExam();
-    int randomSampleSize = random ? 0 : 1;
     return manipulator_->tryReassignRoomsToExamSamePeriod(randomSampleSize, randExam);
 }
 
@@ -190,7 +189,6 @@ bool SCHC::trySwap(const PeriodChange &first, const PeriodChange &second) {
         return false;
     if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(second.moveIn, second.period))
         return false;
-    int randomSampleSize = random ? 0 : 1;
     if (!manipulator_->tryAssignRandomRoomsForEachExamInOtherPeriod(randomSampleSize, first, second))
         return false;
     manipulator_->moveExamsToPeriod(second.moveIn, second.period);

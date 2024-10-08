@@ -36,7 +36,7 @@ int main() {
     }
     // Create an Initial solution_ object that uses the ExamTTSolutionManipulator to create an initial solution_
     InitialSolution initialSolution(examDataPtr);
-    initialSolution.random = false;
+    initialSolution.randomSampleSize = 1;
     auto solution = initialSolution.build();
     // The ExamTTData object now has an initial solution_ if any
     if (solution == nullptr) {
@@ -49,7 +49,7 @@ int main() {
         std::cout << std::to_string(i) << std::endl;
         auto algo = std::make_shared<SCHC>(std::make_shared<ExamTTSolution>(solution->deepCopy()));
         algo->stopTime = 0.0;
-        algo->random = false;
+        algo->randomSampleSize = 1;
         algo->fullCollisionCost = true;
         algo->schc_all = true;
         algo->schc_acp = false;
@@ -68,7 +68,7 @@ int main() {
         }
     }
     // Get the best solution_ from a multiset sorted by cost asc
-    auto result = *logger.getData().begin();
+    auto result = logger.getData();
     // Export the solution_ to the original filepath the ExamTTData was created from
     ExamTTFileManager::exportExamTTSolution(result);
     logger.reset();
