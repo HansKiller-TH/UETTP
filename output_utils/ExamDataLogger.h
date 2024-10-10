@@ -14,7 +14,7 @@
 class ExamDataLogger{
 public:
     int runs = 0;
-    void add(std::shared_ptr<ExamTTSolution> solution);
+    void add(const std::shared_ptr<ExamTTSolution>& solution);
     void setFileName(const std::string &configFilename);
     void writeToFileBest();
     void writeToFileTimesCosts();
@@ -24,10 +24,10 @@ public:
             return e1->cost < e2->cost;
         }
     };
-    std::multiset<std::shared_ptr<ExamTTSolution>> getData();
+    std::vector<std::shared_ptr<ExamTTSolution>> getData();
     void reset();
 private:
-    std::multiset<std::shared_ptr<ExamTTSolution>> solutions;
+    std::vector<std::shared_ptr<ExamTTSolution>> solutions;
     std::string filename;
 };
 

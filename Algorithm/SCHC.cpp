@@ -86,7 +86,7 @@ std::string SCHC::getConfig() const {
         result += "acp_";
     if (schc_imp)
         result += "imp_";
-    result += random ? "rand_" : "fit_";
+    result += randomSampleSize == 1 ? "fit_" : "rand_";
     if(!fullCollisionCost)
         result += "limit_";
     result += "Lc" + std::to_string(counterLimit) + "_";
@@ -97,7 +97,7 @@ std::string SCHC::getConfig() const {
 
 bool SCHC::createCandidateSolution() {
     // if random is false we want to assign fitting rooms to the exams and do not need the roomMove
-    int min = random ? 0 : 1;
+    int min = randomSampleSize == 1 ? 1 : 0;
     std::uniform_int_distribution<> distr(min, 3);
     int rand = distr(gen_);
     switch (rand) {
@@ -119,21 +119,8 @@ bool SCHC::createCandidateSolution() {
 }
 
 bool SCHC::roomMove() {
-    if (random) {
-        auto randExam = manipulator_->getRandomExam();
-        auto randRooms = manipulator_->getRandomRoomsForExamInSamePeriod(randExam);
-        if (randRooms.empty())
-            return false;
-        manipulator_->reassignRoomsToExamSamePeriod(randExam, randRooms);
-        return true;
-    } else {
-        auto period = manipulator_->getRandomPeriod();
-        auto exams = manipulator_->getExamsInPeriod(period);
-        if (exams.empty())
-            return false;
-        manipulator_->tryAssignBestFitRoomsForEachExamInOtherPeriod(exams, period, {}, -1);
-        return true;
-    }
+    auto randExam = manipulator_->getRandomExam();
+    return manipulator_->tryReassignRoomsToExamSamePeriod(randomSampleSize, randExam);
 }
 
 bool SCHC::shiftMove() {
@@ -149,14 +136,8 @@ bool SCHC::shiftMove() {
     auto examsSecond = manipulator_->getExamsInPeriod(periodSecond);
 
     manipulator_->kempeChain(displacedFirst, displacedSecond, examsFirst, examsSecond);
-    examsFirst.insert(displacedSecond.begin(), displacedSecond.end());
-    examsSecond.insert(displacedFirst.begin(), displacedFirst.end());
-    if (random) {
-        return trySwap(displacedFirst, periodSecond, displacedSecond, periodFirst);
-    } else {
-        return trySwap(examsFirst, periodFirst, examsSecond, periodSecond);
-    }
 
+    return trySwap({periodFirst, displacedSecond}, {periodSecond, displacedFirst});
 }
 
 bool SCHC::swapMove() {
@@ -174,13 +155,8 @@ bool SCHC::swapMove() {
     auto examsSecond = manipulator_->getExamsInPeriodWithout(displacedSecond);
 
     manipulator_->kempeChain(displacedFirst, displacedSecond, examsFirst, examsSecond);
-    examsFirst.insert(displacedSecond.begin(), displacedSecond.end());
-    examsSecond.insert(displacedFirst.begin(), displacedFirst.end());
-    if (random) {
-        return trySwap(displacedFirst, periodSecond, displacedSecond, periodFirst);
-    } else {
-        return trySwap(examsFirst, periodFirst, examsSecond, periodSecond);
-    }
+
+    return trySwap({periodFirst, displacedSecond}, {periodSecond, displacedFirst});
 }
 
 bool SCHC::slotMove() {
@@ -188,55 +164,44 @@ bool SCHC::slotMove() {
     auto periodSecond = manipulator_->getRandomPeriod();
     if (periodFirst == periodSecond)
         return false;
-    if (manipulator_->getExamsInPeriod(periodFirst).empty() && manipulator_->getExamsInPeriod(periodSecond).empty())
-        return false;
     auto examsFirst = manipulator_->getExamsInPeriod(periodFirst);
-    if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(examsFirst, periodSecond))
-        return false;
-
     auto examsSecond = manipulator_->getExamsInPeriod(periodSecond);
-    if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(examsSecond, periodFirst))
+    if (examsFirst.empty() && examsSecond.empty())
+        return false;
+    PeriodChange first(periodFirst,examsSecond);
+    PeriodChange second(periodSecond, examsFirst);
+
+    if (isPeriodChangeInfeasible(first))
+        return false;
+    if (isPeriodChangeInfeasible(second))
         return false;
 
-    if (!manipulator_->trySwitchUsedRooms(periodFirst, periodSecond))
+    if (!manipulator_->trySwitchUsedRooms(first, second))
         return false;
 
-    manipulator_->moveExamsToPeriod(examsFirst, periodSecond);
-    manipulator_->moveExamsToPeriod(examsSecond, periodFirst);
+    manipulator_->moveExamsToPeriod(first, second);
     return true;
 }
 
-bool SCHC::trySwap(const std::set<int> &displacedFirst, int periodSecond, const std::set<int> &displacedSecond,
-                   int periodFirst) {
-    if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(displacedFirst, periodSecond))
+bool SCHC::trySwap(const PeriodChange &first, const PeriodChange &second) {
+    if (isPeriodChangeInfeasible(first))
         return false;
-    if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(displacedSecond, periodFirst))
+    if (isPeriodChangeInfeasible(second))
         return false;
-    if (random) {
-        if (!manipulator_->tryAssignRandomRoomsForEachExamInOtherPeriod(displacedSecond, periodFirst,
-                                                                        displacedFirst, periodSecond))
-            return false;
-    } else {
-        if (!manipulator_->tryAssignBestFitRoomsForEachExamInOtherPeriod(displacedSecond, periodFirst,
-                                                                         displacedFirst, periodSecond))
-            return false;
-    }
-
-    manipulator_->moveExamsToPeriod(displacedFirst, periodSecond);
-    manipulator_->moveExamsToPeriod(displacedSecond, periodFirst);
+    if (!manipulator_->tryAssignRandomRooms(randomSampleSize, first, second))
+        return false;
+    manipulator_->moveExamsToPeriod(first, second);
     return true;
 }
 
-bool SCHC::isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(const std::set<int> &exams, const int &period) {
-    if (exams.empty() || period == -1)
+bool SCHC::isPeriodChangeInfeasible(const PeriodChange &change) {
+    if (change.moveIn.empty() || change.period == -1)
         return false;
-    if (manipulator_->isAnyExamInvalidInPeriod(exams, period))
+    if (manipulator_->isAnyExamInvalidInPeriod(change.moveIn, change.period))
         return true;
-    auto previous = manipulator_->getPreviousPeriodSameDay(period);
-    if (manipulator_->hasAnyExamCollisionWithPeriod(exams, previous))
-        return true;
-    auto next = manipulator_->getNextPeriodSameDay(period);
-    if (manipulator_->hasAnyExamCollisionWithPeriod(exams, next))
+    auto previous = manipulator_->getPreviousPeriodSameDay(change.period);
+    auto next = manipulator_->getNextPeriodSameDay(change.period);
+    if (manipulator_->hasAnyExamCollisionWithAnyPeriod(change.moveIn, {previous, next}))
         return true;
     return false;
 }

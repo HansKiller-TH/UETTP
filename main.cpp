@@ -22,7 +22,8 @@ int main() {
     // Open an Open-File-Dialog to get a file path from the user
     std::string filepath = openFileDialog();
     if (filepath.empty()) {
-        std::cout << "File is already used by a different program or you entered an empty file path, please check and try again.\n";
+        std::cout
+                << "File is already used by a different program or you entered an empty file path, please check and try again.\n";
         return 1;
     }
     // print filepath to console
@@ -36,7 +37,7 @@ int main() {
     }
     // Create an Initial solution_ object that uses the ExamTTSolutionManipulator to create an initial solution_
     InitialSolution initialSolution(examDataPtr);
-    initialSolution.random = true;
+    initialSolution.randomSampleSize = 1;
     auto solution = initialSolution.build();
     // The ExamTTData object now has an initial solution_ if any
     if (solution == nullptr) {
@@ -49,12 +50,12 @@ int main() {
         std::cout << std::to_string(i) << std::endl;
         auto algo = std::make_shared<SCHC>(std::make_shared<ExamTTSolution>(solution->deepCopy()));
         algo->stopTime = 0.0;
-        algo->random = true;
+        algo->randomSampleSize = 1;
         algo->fullCollisionCost = true;
         algo->schc_all = true;
         algo->schc_acp = false;
         algo->schc_imp = false;
-        algo->counterLimit = 500;
+        algo->counterLimit = 6186;
         // Use std::async to run the function in a separate thread and get a future to its result
         futures.push_back(std::async(std::launch::async, [algo]() { return algo->run(); }));
         if ((i + 1) % max_concurrent_threads == 0 || i == num_threads - 1) {
@@ -68,9 +69,13 @@ int main() {
         }
     }
     // Get the best solution_ from a multiset sorted by cost asc
-    auto result = *logger.getData().begin();
+    auto result = logger.getData();
+    std::sort(result.begin(), result.end(),
+              [](const std::shared_ptr<ExamTTSolution> &lhs, const std::shared_ptr<ExamTTSolution> &rhs) {
+                  return lhs->cost < rhs->cost;
+              });
     // Export the solution_ to the original filepath the ExamTTData was created from
-    ExamTTFileManager::exportExamTTSolution(result);
+    ExamTTFileManager::exportExamTTSolution(result.front());
     logger.reset();
 
     return 0;

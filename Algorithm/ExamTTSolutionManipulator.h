@@ -10,6 +10,7 @@
 #include <memory>
 #include "data_utils/ExamTTData.h"
 #include "data_utils/ExamTTSolution.h"
+#include "PeriodChange.h"
 
 /**
  * @class ExamTTSolutionManipulator
@@ -108,18 +109,11 @@ public:
      */
     int getRandomPeriod();
 
-    std::set<int> getBestFittingRoomsForExamInSamePeriod(const int &exam);
-
-    std::set<int> getRandomRoomsForExamInSamePeriod(const int &exam);
-
-    std::set<int> getRandomRoomsForExamInPeriod(const int &exam, const int &period);
-
-    std::set<int> getBestFittingRoomsForExam(const std::pair<int, int> &exam, const std::vector<int> &roomsAvailability);
-
-    std::set<int> getRandomRoomsForExam(const std::pair<int, int> &exam, const std::vector<int> &roomsAvailability);
+    std::set<int> getRandomRoomsForExam(int exam, const std::vector<int> &roomsAvailability,
+                                        int randomSampleSize = 0);
 
     /**
-     * @fn void reassignRoomsToExamSamePeriod(const int &exam, std::set<int> &rooms)
+     * @fn void tryReassignRoomsToExamSamePeriod(const int &exam, std::set<int> &rooms)
      * @brief Reassigns rooms to an exam in the same period.
      *
      * This function reassigns the rooms of a specified exam to a new set of rooms in the same period. It updates the room availability information in the ExamTTData object.
@@ -127,99 +121,31 @@ public:
      * @param exam An integer representing the index of the exam to which the rooms will be reassigned.
      * @param rooms A reference to a set of integers representing the new set of rooms for the exam.
      */
-    void reassignRoomsToExamSamePeriod(const int &exam, std::set<int> &rooms);
+    bool tryReassignRoomsToExamSamePeriod(int randomSampleSize, int exam);
 
     /**
      * @brief Attempt to switch the used rooms between two periods.
      *
      * This function attempts to switch the used rooms between two periods. It checks if it is possible to switch the rooms and if so, it performs the switch and updates the room availability information in the ExamTTData object.
      *
-     * @param periodFirst An integer representing the index of the first period.
-     * @param periodSecond An integer representing the index of the second period.
+     * @param first An integer representing the index of the first period.
+     * @param second An integer representing the index of the second period.
      * @return True if the switch was successful, false otherwise.
      */
-    bool trySwitchUsedRooms(const int &periodFirst, const int &periodSecond);
+    bool trySwitchUsedRooms(const PeriodChange &first, const PeriodChange &second);
 
     /**
-     * @brief Try to assign the best fitting rooms for each exam in a given period, excluding specified rooms.
+     * Attempts to assign random rooms to each exam in a given period, ensuring no room conflicts.
      *
-     * This function attempts to assign the best fitting rooms from the available rooms for each exam in the specified period,
-     * while excluding any rooms specified in the "without" set. It returns true if all exams are successfully assigned rooms,
-     * and false otherwise.
-     *
-     * @param exams  The set of exams to assign rooms for.
-     * @param period The period in which the exams are scheduled.
-     * @param without The set of rooms to exclude from assignment.
-     * @return True if all exams are successfully assigned rooms, false otherwise.
+     * @param first The first period change, containing the period and exams to move in and out.
+     * @param second Optional second period change, defaulting to a no-op if not provided.
+     * @returns true if rooms are successfully assigned for all exams in both periods, false otherwise.
      *
      * @throws std::runtime_error if an invalid or unavailable room is attempted to be assigned.
      */
-    bool tryAssignBestFittingRoomsForEachExamInPeriodWithout(const std::set<int> &exams, const int &period, const std::set<int> &without);
-
-    /**
-     * @brief Tries to assign the best fitting rooms for each exam in a given period.
-     *
-     * This function attempts to assign the best fitting rooms for each exam in the specified period.
-     * It takes a set of exams and a period as input parameters.
-     *
-     * @param exams A set of exams to assign rooms for.
-     * @param period The period in which the exams are scheduled.
-     * @return Returns true if the best fitting rooms are successfully assigned for each exam, false otherwise.
-     *
-     * @note This function requires that the exams parameter is not empty and the period parameter is greater than or equal to 0.
-     * If either of these conditions is not met, the function will return false.
-     */
-    bool tryAssignBestFittingRoomsForEachExamInPeriod(const std::set<int> &exams, const int &period);
-
-    /**
-     * @brief Try to assign the best fitting rooms for each exam in other periods.
-     *
-     * This function tries to assign the best fitting rooms for each exam in other periods. It takes two sets of exams and two periods as parameters.
-     *
-     * @param examsFirst   A set of exams for the first period.
-     * @param firstPeriod  The first period.
-     * @param examsSecond  A set of exams for the second period.
-     * @param secondPeriod The second period.
-     *
-     * @return true if the best fit rooms are successfully assigned for each exam in the other periods, false otherwise.
-     *
-     * @throws std::runtime_error if an invalid room is assigned or an unavailable room is assigned.
-     */
-    bool tryAssignBestFitRoomsForEachExamInOtherPeriod(const std::set<int> &examsFirst, const int &firstPeriod, const std::set<int> &examsSecond, const int &secondPeriod);
-
-    /**
-     * @brief Tries to assign random rooms to each exam in a given period.
-     *
-     * This function attempts to assign random rooms to each exam in the specified period.
-     * It takes a set of exams and the period as input parameters.
-     *
-     * @param exams A set of integers representing the IDs of exams.
-     * @param period An integer representing the period in which the exams are scheduled.
-     *
-     * @return A boolean indicating whether the random room assignment was successful or not.
-     *         - Returns true if the exams were assigned random rooms successfully.
-     *         - Returns false if the exams are empty or the period is less than zero.
-     *
-     * @note This function internally calls tryAssignRandomRoomsForEachExamInOtherPeriod().
-     */
-    bool tryAssignRandomRoomsForEachExamInPeriod(const std::set<int> &exams, const int &period);
-
-    /**
-     * @brief Tries to assign random rooms for each exam in other period.
-     *
-     * This function takes two sets of exams and two periods as input arguments.
-     * It attempts to assign random rooms for each exam in the first set in the second period,
-     * and for each exam in the second set in the first period.
-     *
-     * @param examsFirst The set of exams to be assigned rooms in the first period.
-     * @param firstPeriod The first period.
-     * @param examsSecond The set of exams to be assigned rooms in the second period.
-     * @param secondPeriod The second period.
-     * @return true if random rooms were successfully assigned for each exam in both periods, false otherwise.
-     *
-     * @throws std::runtime_error if an invalid or unavailable room is assigned.
-     */
-    bool tryAssignRandomRoomsForEachExamInOtherPeriod(const std::set<int> &examsFirst, const int &firstPeriod, const std::set<int> &examsSecond, const int &secondPeriod);
+    bool
+    tryAssignRandomRooms(int randomSampleSize, const PeriodChange &first,
+                         const PeriodChange &second = PeriodChange());
 
     /**
      * @brief Moves an exam to a specified period.
@@ -255,7 +181,7 @@ public:
      *
      * @return None.
      */
-    void moveExamsToPeriod(const std::set<int> &exams, const int &period);
+    void moveExamsToPeriod(const PeriodChange &first, const PeriodChange &second = PeriodChange());
 
     /**
      * @brief Performs the Kempe chain swap algorithm on two sets of exams.
@@ -286,10 +212,10 @@ public:
      * otherwise.
      *
      * @param exams A constant reference to a set of integers representing the exams.
-     * @param period The period to check for collisions.
+     * @param periods The period to check for collisions.
      * @return true if there is at least one exam collision with the period, false otherwise.
      */
-    bool hasAnyExamCollisionWithPeriod(const std::set<int> &exams, const int& period);
+    bool hasAnyExamCollisionWithAnyPeriod(const std::set<int> &exams, const std::set<int> &periods);
 
     /**
      * @brief Checks if any exam in the given set is invalid for the specified period.
@@ -332,31 +258,6 @@ public:
     std::set<int> getExamsInPeriodWithout(const std::set<int> &without);
 
     /**
-     * @brief Retrieves the availability of rooms for a given period, excluding specified exams.
-     *
-     * This function returns a vector containing the availability of rooms for a specific period,
-     * while excluding certain exams. If the period is -1, an empty vector is returned.
-     *
-     * @param period The period for which to retrieve room availability.
-     * @param without A set of exams whose rooms to vacate.
-     * @return A vector representing the availability of rooms. The value 0 represents an available room,
-     * the value 1 represents an unavailable room and the value -1 represents an invalid room.
-     */
-    std::vector<int> getPeriodRoomsAvailabilityWithout(const int &period, const std::set<int> &without);
-
-    /**
-     * @brief Returns a copy of the availability all rooms for a given period where all valid rooms are also available.
-     *
-     * This function retrieves the availability status of all rooms for a given period with all valid rooms made available. The availability status
-     * is represented as a vector of integers, where each element indicates the availability of a room. A value of 0
-     * indicates that the room is not available, while a value of 1 indicates that the room is available and -1 indicates an invalid room.
-     *
-     * @param period The period for which the availability status of rooms needs to be retrieved.
-     * @return std::vector<int> The availability status of all rooms for the given period. If the period is -1, an empty vector is returned.
-     */
-    std::vector<int> getPeriodRoomsAvailabilityFreed(const int &period);
-
-    /**
      * @brief Gets a set of all exams.
      *
      * This function returns a set containing the indexes of all exams.
@@ -368,13 +269,20 @@ public:
     [[nodiscard]] std::set<int> getAllExams() const;
 
     /**
-     * @brief Returns the number of periods.
+     * @brief Get the valid exam periods for a set of exams.
      *
-     * This function returns the number of periods in the exam data.
+     * This function takes a set of exams and returns the valid periods for those exams.
+     * The validity information for each exam is fetched from the examData_ member variable
+     * and the valid periods are determined based on the validity values.
      *
-     * @return The number of periods.
+     * @param exams The set of exams for which to get the valid periods.
+     * @return A set of integers representing the valid periods for the given exams.
+     *
+     * @note The validity information for each exam is stored in the examData_->examPeriodsValidity map
+     * where each exam is associated with a vector of validity values. A validity value of 1 indicates
+     * that the corresponding period is valid for the exam.
      */
-    int getNumberOfPeriods();
+    std::set<int> getValidPeriodsForExams(const std::set<int> &exams);
 
     /**
      * @brief Calculates the previous period with the same day as the given period.
@@ -399,40 +307,9 @@ public:
      */
     int getNextPeriodSameDay(const int &period);
 
-    /**
-     * @brief Get the valid exam periods for a set of exams.
-     *
-     * This function takes a set of exams and returns the valid periods for those exams.
-     * The validity information for each exam is fetched from the examData_ member variable
-     * and the valid periods are determined based on the validity values.
-     *
-     * @param exams The set of exams for which to get the valid periods.
-     * @return A set of integers representing the valid periods for the given exams.
-     *
-     * @note The validity information for each exam is stored in the examData_->examPeriodsValidity map
-     * where each exam is associated with a vector of validity values. A validity value of 1 indicates
-     * that the corresponding period is valid for the exam.
-     */
-    std::set<int> getValidPeriodsForExams(const std::set<int> &exams);
-
 private:
     std::shared_ptr<ExamTTSolution> solution_;
     std::mt19937 gen;
-
-    /**
-     * Returns a set of available and valid rooms for an exam in a given period.
-     *
-     * @param exam   The ID of the exam.
-     * @param period The ID of the period.
-     * @return       A set of rooms indexes that are available and valid for the specified exam and period.
-     *
-     * @details This function retrieves the availability and validity information for the specified exam and period
-     *          from the exam data. It then creates a temporary vector containing the availability of rooms for the
-     *          specified period and the validity of rooms for the specified exam. By applying a predicate function
-     *          that checks if a value is equal to 1, it selects the indexes of the rooms that satisfy both conditions.
-     *          Finally, it returns a set containing the selected rooms.
-     */
-    std::set<int> getAvailableValidRoomsForExamInPeriod(const int &exam, const int &period);
 
     /**
      * @brief Gets the available valid rooms for a given exam.
@@ -461,30 +338,17 @@ private:
     std::set<int> extractCollisionsAndConnected(const std::set<int>& inserts, std::set<int> &exams);
 
     /**
-     * @brief Returns the index and size of rooms.
+     * @brief Retrieves the availability of rooms for a given period, excluding specified exams.
      *
-     * This function takes a set of room indices and returns a vector of pairs,
-     * each containing the room index and its corresponding size. The vector is
-     * sorted in ascending order of the room sizes.
+     * This function returns a vector containing the availability of rooms for a specific period,
+     * while excluding certain exams. If the period is -1, an empty vector is returned.
      *
-     * @param rooms A set of room indices.
-     * @return A vector of pairs containing room index and size.
+     * @param period The period for which to retrieve room availability.
+     * @param without A set of exams whose rooms to vacate.
+     * @return A vector representing the availability of rooms. The value 0 represents an available room,
+     * the value 1 represents an unavailable room and the value -1 represents an invalid room.
      */
-    std::vector<std::pair<int, int>> getRoomsIndexAndSize(const std::set<int> &rooms);
-
-    /**
-     * @brief Retrieves the index and size of exams based on the given set of exams.
-     *
-     * This function takes a set of exams and returns a vector of pairs, where each pair contains
-     * the index and size of an exam. The index represents the exam identifier, and the size represents
-     * the number of students taking the exam. The vector is sorted in descending order of the exam sizes.
-     *
-     * If the set of exams is empty, an empty vector will be returned.
-     *
-     * @param exams The set of exams to retrieve the index and size for.
-     * @return std::vector<std::pair<int, int>> A vector of pairs, where each pair contains the index and size of an exam.
-     */
-    std::vector<std::pair<int, int>> getExamsIndexAndSize(const std::set<int> &exams);
+    std::vector<int> getPeriodRoomsAvailabilityWithout(const int &period, const std::set<int> &without);
 
 };
 

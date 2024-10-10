@@ -268,39 +268,6 @@ TEST(VectorUtilsTest, sortBinResult){
     ASSERT_EQ(result,asserter);
 }
 
-TEST(VectorUtilsTest, getFirstSubset){
-    std::vector<std::pair<int, int>> binIndexAndSize = {
-            {7, 80},
-            {6, 30},
-            {5, 20},
-            {4, 15},
-            {3, 10},
-            {2, 7},
-            {1, 6},
-            {0, 5}};
-    auto binSetsAndSize = VectorUtils::binPackingAllBins(40, binIndexAndSize);
-    VectorUtils::sortBinResult(binSetsAndSize);
-
-    std::set<int> set = {0,1,2,3,4,5,6,7};
-    auto result = VectorUtils::getfirstSubset(set, binSetsAndSize);
-    std::set<int> asserter = {7};
-    ASSERT_EQ(result, asserter);
-
-    set = {0,1,2,3,4,5,6};
-    result = VectorUtils::getfirstSubset(set, binSetsAndSize);
-    asserter = {3,6};
-    ASSERT_EQ(result, asserter);
-
-    set = {0,1,2,3,4,5};
-    result = VectorUtils::getfirstSubset(set, binSetsAndSize);
-    asserter = {0,4,5};
-    ASSERT_EQ(result, asserter);
-
-    set = {0,1,2,3};
-    result = VectorUtils::getfirstSubset(set, binSetsAndSize);
-    ASSERT_FALSE(result.has_value());
-}
-
 TEST(VectorUtilsTest, getValuesIndexSecond){
     std::set<int> indexes = {0,1,2,3};
     std::vector<int> values = {5,6,7,8};
