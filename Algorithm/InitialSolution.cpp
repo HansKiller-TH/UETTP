@@ -12,11 +12,9 @@ std::set<int> InitialSolution::getNextExam() {
 
 bool InitialSolution::scheduleExam(const std::set<int> &exams) {
     for (auto period: manipulator->getValidPeriodsForExams(exams)) {
-        auto previous = manipulator->getPreviousPeriodSameDay(period);
-        auto next = manipulator->getNextPeriodSameDay(period);
-        if (manipulator->hasAnyExamCollisionWithAnyPeriod(exams, {previous, period, next}))
-            continue;
         PeriodChange change(period, exams);
+        if (manipulator->hasAnyExamCollisionWithAnyPeriod(change, {-1, 0, 1}))
+            continue;
         if (!manipulator->tryAssignRandomRooms(randomSampleSize, change))
             continue;
         manipulator->moveExamsToPeriod(change);

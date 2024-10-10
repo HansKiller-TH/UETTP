@@ -212,10 +212,10 @@ public:
      * otherwise.
      *
      * @param exams A constant reference to a set of integers representing the exams.
-     * @param periods The period to check for collisions.
+     * @param relativePeriods The period to check for collisions.
      * @return true if there is at least one exam collision with the period, false otherwise.
      */
-    bool hasAnyExamCollisionWithAnyPeriod(const std::set<int> &exams, const std::set<int> &periods);
+    bool hasAnyExamCollisionWithAnyPeriod(const PeriodChange &change, const std::set<int> &relativePeriods);
 
     /**
      * @brief Checks if any exam in the given set is invalid for the specified period.
@@ -349,6 +349,25 @@ private:
      * the value 1 represents an unavailable room and the value -1 represents an invalid room.
      */
     std::vector<int> getPeriodRoomsAvailabilityWithout(const int &period, const std::set<int> &without);
+
+    /**
+     * Calculates the absolute period on the same day, given a base period and a relative period.
+     *
+     * This function determines the period by adding the `relativePeriod` to the `basePeriod`.
+     * It checks whether the resulting period exists within the valid range of periods and
+     * ensures that the computed period falls on the same day as the `basePeriod`.
+     *
+     * If the `relativePeriod` is zero, the function returns the `basePeriod`.
+     * If the `basePeriod` is out of the valid range or the computed period does not fall
+     * on the same day as the `basePeriod`, the function returns an empty optional.
+     *
+     * @param basePeriod The starting period, used as the reference point.
+     * @param relativePeriod The offset to be added to the `basePeriod`.
+     * @return An optional containing the resulting absolute period on the same day,
+     *         or an empty optional if the resulting period is invalid or not on the same day
+     *         as the `basePeriod`.
+     */
+    std::optional<int> getAbsolutePeriodSameDay(const int basePeriod, const int relativePeriod);
 
 };
 
