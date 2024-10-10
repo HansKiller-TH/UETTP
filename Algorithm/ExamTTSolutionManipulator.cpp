@@ -271,14 +271,17 @@ void ExamTTSolutionManipulator::kempeChain(std::set<int> &displacedFirst, std::s
     }
 }
 
-bool ExamTTSolutionManipulator::hasAnyExamCollisionWithAnyPeriod(const std::set<int> &exams, const std::set<int> &periods) {
-    if (exams.empty())
+bool
+ExamTTSolutionManipulator::hasAnyExamCollisionWithAnyPeriod(const PeriodChange &change,
+                                                            const std::set<int> &relativePeriods) {
+    if (change.moveIn.empty())
         return false;
-    for (const auto& period:periods) {
-        if(period < 0)
+    for (const auto& relativePeriod:relativePeriods) {
+        auto absolutePeriod = getAbsolutePeriodSameDay(change.period, relativePeriod);
+        if(!absolutePeriod.has_value())
             continue;
-        if(std::any_of(exams.begin(), exams.end(),
-                           [&](const int &exam) { return solution_->periodExamCollisions.at(period).at(exam) > 0; }))
+        if(std::any_of(change.moveIn.begin(), change.moveIn.end(),
+                           [&](const int &exam) { return solution_->periodExamCollisions.at(absolutePeriod.value()).at(exam) > 0; }))
             return true;
     }
     return false;
@@ -381,4 +384,18 @@ ExamTTSolutionManipulator::getPeriodRoomsAvailabilityWithout(const int &period, 
         }
     }
     return result;
+}
+
+std::optional<int> ExamTTSolutionManipulator::getAbsolutePeriodSameDay(const int basePeriod, const int relativePeriod) {
+    if (relativePeriod == 0)
+        return basePeriod;
+    const auto NUMBER_OF_PERIODS = solution_->examData->periodID.size();
+    if(basePeriod < 0 || basePeriod >= NUMBER_OF_PERIODS)
+        return std::nullopt;
+    auto absolutePeriod = basePeriod + relativePeriod;
+    if(absolutePeriod < 0 || absolutePeriod >= NUMBER_OF_PERIODS)
+        return std::nullopt;
+    if(solution_->examData->periodDay.at(absolutePeriod) == solution_->examData->periodDay.at(basePeriod))
+        return absolutePeriod;
+    return std::nullopt;
 }

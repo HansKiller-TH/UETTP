@@ -199,9 +199,7 @@ bool SCHC::isPeriodChangeInfeasible(const PeriodChange &change) {
         return false;
     if (manipulator_->isAnyExamInvalidInPeriod(change.moveIn, change.period))
         return true;
-    auto previous = manipulator_->getPreviousPeriodSameDay(change.period);
-    auto next = manipulator_->getNextPeriodSameDay(change.period);
-    if (manipulator_->hasAnyExamCollisionWithAnyPeriod(change.moveIn, {previous, next}))
+    if (manipulator_->hasAnyExamCollisionWithAnyPeriod(change, {-1, 1}))
         return true;
     return false;
 }

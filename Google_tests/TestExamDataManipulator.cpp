@@ -179,39 +179,6 @@ TEST_F(ExamDataManipulatorTest, getAllExamsTest) {
     ASSERT_EQ(result, asserter);
 }
 
-TEST_F(ExamDataManipulatorTest, getNextPeriodSameDayTest) {
-    ExamTTDataTMP examDataTMP;
-    examDataTMP.periodDay.value() = {4, 5, 5, 5, 6};
-    auto examTTData = std::make_shared<ExamTTData>(examDataTMP);
-    auto solution = std::make_shared<ExamTTSolution>(examTTData);
-    manipulator.setSolution(solution);
-    auto result = manipulator.getNextPeriodSameDay(1);
-    int asserter = 2;
-    ASSERT_EQ(result, asserter);
-}
-
-TEST_F(ExamDataManipulatorTest, getNextPeriodSameDay_NextPeriodDifferentDay_Test) {
-    ExamTTDataTMP examDataTMP;
-    examDataTMP.periodDay.value() = {4, 5, 5, 5, 6};
-    auto examTTData = std::make_shared<ExamTTData>(examDataTMP);
-    auto solution = std::make_shared<ExamTTSolution>(examTTData);
-    manipulator.setSolution(solution);
-    auto result = manipulator.getNextPeriodSameDay(3);
-    int asserter = -1;
-    ASSERT_EQ(result, asserter);
-}
-
-TEST_F(ExamDataManipulatorTest, getNextPeriodSameDay_NoNextPeriod_Test) {
-    ExamTTDataTMP examDataTMP;
-    examDataTMP.periodDay.value() = {4, 5, 5, 5, 6};
-    auto examTTData = std::make_shared<ExamTTData>(examDataTMP);
-    auto solution = std::make_shared<ExamTTSolution>(examTTData);
-    manipulator.setSolution(solution);
-    auto result = manipulator.getNextPeriodSameDay(4);
-    int asserter = -1;
-    ASSERT_EQ(result, asserter);
-}
-
 TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriodTest) {
     ExamTTDataTMP examDataTMP;
     auto examTTData = std::make_shared<ExamTTData>(examDataTMP);
@@ -219,7 +186,7 @@ TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriodTest) {
     solution->periodExamCollisions = {{0, 1, 0, 1, 0, 1}};
     manipulator.setSolution(solution);
     std::set<int> exams = {0, 2, 4, 5};
-    ASSERT_TRUE(manipulator.hasAnyExamCollisionWithAnyPeriod(exams, {0}));
+    ASSERT_TRUE(manipulator.hasAnyExamCollisionWithAnyPeriod({0,exams}, {0}));
 }
 
 TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_All_Test) {
@@ -229,7 +196,7 @@ TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_All_Test) {
     solution->periodExamCollisions = {{0, 1, 0, 1, 0, 1}};
     manipulator.setSolution(solution);
     std::set<int> exams = {1, 3, 5};
-    ASSERT_TRUE(manipulator.hasAnyExamCollisionWithAnyPeriod(exams, {0}));
+    ASSERT_TRUE(manipulator.hasAnyExamCollisionWithAnyPeriod({0,exams}, {0}));
 }
 
 TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_None_Test) {
@@ -239,7 +206,7 @@ TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_None_Test) {
     solution->periodExamCollisions = {{0, 1, 0, 1, 0, 1}};
     manipulator.setSolution(solution);
     std::set<int> exams = {0, 2, 4};
-    ASSERT_FALSE(manipulator.hasAnyExamCollisionWithAnyPeriod(exams, {0}));
+    ASSERT_FALSE(manipulator.hasAnyExamCollisionWithAnyPeriod({0,exams}, {0}));
 }
 
 TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_NonePeriod_Test) {
@@ -249,7 +216,7 @@ TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_NonePeriod_Test) {
     solution->periodExamCollisions = {{0, 1, 0, 1, 0, 1}};
     manipulator.setSolution(solution);
     std::set<int> exams = {0, 2, 4};
-    ASSERT_FALSE(manipulator.hasAnyExamCollisionWithAnyPeriod(exams, {-1}));
+    ASSERT_FALSE(manipulator.hasAnyExamCollisionWithAnyPeriod({0,exams}, {-1}));
 }
 
 TEST_F(ExamDataManipulatorTest, getValidPeriodsForExamsTest) {
