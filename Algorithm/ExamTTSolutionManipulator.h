@@ -10,7 +10,7 @@
 #include <memory>
 #include "data_utils/ExamTTData.h"
 #include "data_utils/ExamTTSolution.h"
-#include "vectorUtils/PeriodChange.h"
+#include "PeriodChange.h"
 
 /**
  * @class ExamTTSolutionManipulator
@@ -128,11 +128,11 @@ public:
      *
      * This function attempts to switch the used rooms between two periods. It checks if it is possible to switch the rooms and if so, it performs the switch and updates the room availability information in the ExamTTData object.
      *
-     * @param periodFirst An integer representing the index of the first period.
-     * @param periodSecond An integer representing the index of the second period.
+     * @param first An integer representing the index of the first period.
+     * @param second An integer representing the index of the second period.
      * @return True if the switch was successful, false otherwise.
      */
-    bool trySwitchUsedRooms(int periodFirst, int periodSecond);
+    bool trySwitchUsedRooms(const PeriodChange &first, const PeriodChange &second);
 
     /**
      * Attempts to assign random rooms to each exam in a given period, ensuring no room conflicts.
@@ -144,8 +144,8 @@ public:
      * @throws std::runtime_error if an invalid or unavailable room is attempted to be assigned.
      */
     bool
-    tryAssignRandomRoomsForEachExamInOtherPeriod(int randomSampleSize, const PeriodChange &first,
-                                                 const PeriodChange &second = PeriodChange());
+    tryAssignRandomRooms(int randomSampleSize, const PeriodChange &first,
+                         const PeriodChange &second = PeriodChange());
 
     /**
      * @brief Moves an exam to a specified period.
@@ -181,7 +181,7 @@ public:
      *
      * @return None.
      */
-    void moveExamsToPeriod(const std::set<int> &exams, const int &period);
+    void moveExamsToPeriod(const PeriodChange &first, const PeriodChange &second = PeriodChange());
 
     /**
      * @brief Performs the Kempe chain swap algorithm on two sets of exams.
@@ -212,10 +212,10 @@ public:
      * otherwise.
      *
      * @param exams A constant reference to a set of integers representing the exams.
-     * @param period The period to check for collisions.
+     * @param periods The period to check for collisions.
      * @return true if there is at least one exam collision with the period, false otherwise.
      */
-    bool hasAnyExamCollisionWithPeriod(const std::set<int> &exams, const int& period);
+    bool hasAnyExamCollisionWithAnyPeriod(const std::set<int> &exams, const std::set<int> &periods);
 
     /**
      * @brief Checks if any exam in the given set is invalid for the specified period.

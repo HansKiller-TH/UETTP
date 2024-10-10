@@ -69,7 +69,7 @@ TEST_F(ExamDataManipulatorTest, trySwitchUsedRoomsTest) {
     manipulator.setSolution(solution);
     std::vector<std::vector<int>> asserter = {{1, 0, -1, 1,  0, -1, 1},
                                               {0, 1, 1,  -1, 0, -1, 1}};
-    manipulator.trySwitchUsedRooms(0, 1);
+    manipulator.trySwitchUsedRooms(PeriodChange(0), PeriodChange(1));
     ASSERT_EQ(manipulator.getSolution()->periodRoomsAvailability, asserter);
 }
 
@@ -219,7 +219,7 @@ TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriodTest) {
     solution->periodExamCollisions = {{0, 1, 0, 1, 0, 1}};
     manipulator.setSolution(solution);
     std::set<int> exams = {0, 2, 4, 5};
-    ASSERT_TRUE(manipulator.hasAnyExamCollisionWithPeriod(exams, 0));
+    ASSERT_TRUE(manipulator.hasAnyExamCollisionWithAnyPeriod(exams, {0}));
 }
 
 TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_All_Test) {
@@ -229,7 +229,7 @@ TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_All_Test) {
     solution->periodExamCollisions = {{0, 1, 0, 1, 0, 1}};
     manipulator.setSolution(solution);
     std::set<int> exams = {1, 3, 5};
-    ASSERT_TRUE(manipulator.hasAnyExamCollisionWithPeriod(exams, 0));
+    ASSERT_TRUE(manipulator.hasAnyExamCollisionWithAnyPeriod(exams, {0}));
 }
 
 TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_None_Test) {
@@ -239,7 +239,7 @@ TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_None_Test) {
     solution->periodExamCollisions = {{0, 1, 0, 1, 0, 1}};
     manipulator.setSolution(solution);
     std::set<int> exams = {0, 2, 4};
-    ASSERT_FALSE(manipulator.hasAnyExamCollisionWithPeriod(exams, 0));
+    ASSERT_FALSE(manipulator.hasAnyExamCollisionWithAnyPeriod(exams, {0}));
 }
 
 TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_NonePeriod_Test) {
@@ -249,7 +249,7 @@ TEST_F(ExamDataManipulatorTest, hasAnyExamCollisionWithPeriod_NonePeriod_Test) {
     solution->periodExamCollisions = {{0, 1, 0, 1, 0, 1}};
     manipulator.setSolution(solution);
     std::set<int> exams = {0, 2, 4};
-    ASSERT_FALSE(manipulator.hasAnyExamCollisionWithPeriod(exams, -1));
+    ASSERT_FALSE(manipulator.hasAnyExamCollisionWithAnyPeriod(exams, {-1}));
 }
 
 TEST_F(ExamDataManipulatorTest, getValidPeriodsForExamsTest) {

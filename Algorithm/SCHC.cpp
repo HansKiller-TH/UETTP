@@ -136,9 +136,8 @@ bool SCHC::shiftMove() {
     auto examsSecond = manipulator_->getExamsInPeriod(periodSecond);
 
     manipulator_->kempeChain(displacedFirst, displacedSecond, examsFirst, examsSecond);
-    PeriodChange first(periodFirst, displacedSecond, displacedFirst);
-    PeriodChange second(periodSecond, displacedFirst, displacedSecond);
-    return trySwap(first, second);
+
+    return trySwap({periodFirst, displacedSecond}, {periodSecond, displacedFirst});
 }
 
 bool SCHC::swapMove() {
@@ -156,9 +155,8 @@ bool SCHC::swapMove() {
     auto examsSecond = manipulator_->getExamsInPeriodWithout(displacedSecond);
 
     manipulator_->kempeChain(displacedFirst, displacedSecond, examsFirst, examsSecond);
-    PeriodChange first(periodFirst, displacedSecond, displacedFirst);
-    PeriodChange second(periodSecond, displacedFirst, displacedSecond);
-    return trySwap(first, second);
+
+    return trySwap({periodFirst, displacedSecond}, {periodSecond, displacedFirst});
 }
 
 bool SCHC::slotMove() {
@@ -166,46 +164,44 @@ bool SCHC::slotMove() {
     auto periodSecond = manipulator_->getRandomPeriod();
     if (periodFirst == periodSecond)
         return false;
-    if (manipulator_->getExamsInPeriod(periodFirst).empty() && manipulator_->getExamsInPeriod(periodSecond).empty())
-        return false;
     auto examsFirst = manipulator_->getExamsInPeriod(periodFirst);
-    if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(examsFirst, periodSecond))
-        return false;
-
     auto examsSecond = manipulator_->getExamsInPeriod(periodSecond);
-    if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(examsSecond, periodFirst))
+    if (examsFirst.empty() && examsSecond.empty())
+        return false;
+    PeriodChange first(periodFirst,examsSecond);
+    PeriodChange second(periodSecond, examsFirst);
+
+    if (isPeriodChangeInfeasible(first))
+        return false;
+    if (isPeriodChangeInfeasible(second))
         return false;
 
-    if (!manipulator_->trySwitchUsedRooms(periodFirst, periodSecond))
+    if (!manipulator_->trySwitchUsedRooms(first, second))
         return false;
 
-    manipulator_->moveExamsToPeriod(examsFirst, periodSecond);
-    manipulator_->moveExamsToPeriod(examsSecond, periodFirst);
+    manipulator_->moveExamsToPeriod(first, second);
     return true;
 }
 
 bool SCHC::trySwap(const PeriodChange &first, const PeriodChange &second) {
-    if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(first.moveIn, first.period))
+    if (isPeriodChangeInfeasible(first))
         return false;
-    if (isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(second.moveIn, second.period))
+    if (isPeriodChangeInfeasible(second))
         return false;
-    if (!manipulator_->tryAssignRandomRoomsForEachExamInOtherPeriod(randomSampleSize, first, second))
+    if (!manipulator_->tryAssignRandomRooms(randomSampleSize, first, second))
         return false;
-    manipulator_->moveExamsToPeriod(second.moveIn, second.period);
-    manipulator_->moveExamsToPeriod(first.moveIn, first.period);
+    manipulator_->moveExamsToPeriod(first, second);
     return true;
 }
 
-bool SCHC::isAnyExamInfeasibleInPeriodExcludingCollisionWithIt(const std::set<int> &exams, const int &period) {
-    if (exams.empty() || period == -1)
+bool SCHC::isPeriodChangeInfeasible(const PeriodChange &change) {
+    if (change.moveIn.empty() || change.period == -1)
         return false;
-    if (manipulator_->isAnyExamInvalidInPeriod(exams, period))
+    if (manipulator_->isAnyExamInvalidInPeriod(change.moveIn, change.period))
         return true;
-    auto previous = manipulator_->getPreviousPeriodSameDay(period);
-    if (manipulator_->hasAnyExamCollisionWithPeriod(exams, previous))
-        return true;
-    auto next = manipulator_->getNextPeriodSameDay(period);
-    if (manipulator_->hasAnyExamCollisionWithPeriod(exams, next))
+    auto previous = manipulator_->getPreviousPeriodSameDay(change.period);
+    auto next = manipulator_->getNextPeriodSameDay(change.period);
+    if (manipulator_->hasAnyExamCollisionWithAnyPeriod(change.moveIn, {previous, next}))
         return true;
     return false;
 }

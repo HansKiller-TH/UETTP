@@ -55,7 +55,7 @@ add_library(${PROJECT_NAME}-lib STATIC
         output_utils/ConvergenceLogger.h
         data_utils/ExamTTDataTMP.h
         data_utils/RoomType.h
-        vectorUtils/PeriodChange.h
+        Algorithm/PeriodChange.h
 )
 
 add_executable(step_counting_hill_climbing_algorithm main.cpp)

@@ -7,7 +7,7 @@
 #include <utility>
 #include "ExamTTSolutionManipulator.h"
 #include "vectorUtils/VectorUtils.h"
-#include "vectorUtils/PeriodChange.h"
+#include "PeriodChange.h"
 #include "screenOutput.h"
 
 
@@ -147,12 +147,12 @@ ExamTTSolutionManipulator::getRandomRoomsForExam(const int exam, const std::vect
 
 bool ExamTTSolutionManipulator::tryReassignRoomsToExamSamePeriod(int randomSampleSize, const int exam) {
     auto period = solution_->examPeriod.at(exam);
-    return tryAssignRandomRoomsForEachExamInOtherPeriod(randomSampleSize, PeriodChange(period, {exam}));
+    return tryAssignRandomRooms(randomSampleSize, PeriodChange(period, {exam}));
 }
 
-bool ExamTTSolutionManipulator::trySwitchUsedRooms(const int periodFirst, const int periodSecond) {
-    auto roomsAvailabilityFirst = solution_->periodRoomsAvailability.at(periodFirst);
-    auto roomsAvailabilitySecond = solution_->periodRoomsAvailability.at(periodSecond);
+bool ExamTTSolutionManipulator::trySwitchUsedRooms(const PeriodChange &first, const PeriodChange &second) {
+    auto roomsAvailabilityFirst = solution_->periodRoomsAvailability.at(first.period);
+    auto roomsAvailabilitySecond = solution_->periodRoomsAvailability.at(second.period);
     for (int roomIndex = 0; roomIndex < roomsAvailabilityFirst.size(); ++roomIndex) {
         auto roomFirst = roomsAvailabilityFirst.at(roomIndex);
         auto roomSecond = roomsAvailabilitySecond.at(roomIndex);
@@ -163,16 +163,16 @@ bool ExamTTSolutionManipulator::trySwitchUsedRooms(const int periodFirst, const 
             roomsAvailabilitySecond.at(roomIndex) = roomFirst;
         }
     }
-    solution_->periodRoomsAvailability.at(periodFirst) = roomsAvailabilityFirst;
-    solution_->periodRoomsAvailability.at(periodSecond) = roomsAvailabilitySecond;
+    solution_->periodRoomsAvailability.at(first.period) = roomsAvailabilityFirst;
+    solution_->periodRoomsAvailability.at(second.period) = roomsAvailabilitySecond;
     return true;
 }
 
-bool ExamTTSolutionManipulator::tryAssignRandomRoomsForEachExamInOtherPeriod(const int randomSampleSize,
-                                                                             const PeriodChange &first,
-                                                                             const PeriodChange &second) {
-    auto roomsAvailabilityFirst = getPeriodRoomsAvailabilityWithout(first.period, first.moveOut);
-    auto roomsAvailabilitySecond = getPeriodRoomsAvailabilityWithout(second.period, second.moveOut);
+bool ExamTTSolutionManipulator::tryAssignRandomRooms(int randomSampleSize,
+                                                     const PeriodChange &first,
+                                                     const PeriodChange &second) {
+    auto roomsAvailabilityFirst = getPeriodRoomsAvailabilityWithout(first.period, second.moveIn);
+    auto roomsAvailabilitySecond = getPeriodRoomsAvailabilityWithout(second.period, first.moveIn);
 
     std::vector<std::pair<int, std::set<int>>> examRoomsFirst;
     for (auto &exam: first.moveIn) {
@@ -240,11 +240,11 @@ void ExamTTSolutionManipulator::moveExamToPeriod(const int &exam, const int &per
     solution_->examPeriod.at(exam) = period;
 }
 
-void ExamTTSolutionManipulator::moveExamsToPeriod(const std::set<int> &exams, const int &period) {
-    if (exams.empty())
-        return;
-    for (auto &exam: exams)
-        moveExamToPeriod(exam, period);
+void ExamTTSolutionManipulator::moveExamsToPeriod(const PeriodChange &first, const PeriodChange &second) {
+    for (auto &exam: first.moveIn)
+        moveExamToPeriod(exam, first.period);
+    for (const auto& exam:second.moveIn)
+        moveExamToPeriod(exam, second.period);
 }
 
 void ExamTTSolutionManipulator::kempeChain(std::set<int> &displacedFirst, std::set<int> &displacedSecond,
@@ -271,11 +271,17 @@ void ExamTTSolutionManipulator::kempeChain(std::set<int> &displacedFirst, std::s
     }
 }
 
-bool ExamTTSolutionManipulator::hasAnyExamCollisionWithPeriod(const std::set<int> &exams, const int &period) {
-    if (exams.empty() || period == -1)
+bool ExamTTSolutionManipulator::hasAnyExamCollisionWithAnyPeriod(const std::set<int> &exams, const std::set<int> &periods) {
+    if (exams.empty())
         return false;
-    return std::any_of(exams.begin(), exams.end(),
-                       [&](const int &exam) { return solution_->periodExamCollisions.at(period).at(exam) > 0; });
+    for (const auto& period:periods) {
+        if(period < 0)
+            continue;
+        if(std::any_of(exams.begin(), exams.end(),
+                           [&](const int &exam) { return solution_->periodExamCollisions.at(period).at(exam) > 0; }))
+            return true;
+    }
+    return false;
 }
 
 bool ExamTTSolutionManipulator::isAnyExamInvalidInPeriod(const std::set<int> &exams, const int &period) {

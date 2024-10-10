@@ -7,39 +7,25 @@
 #include "InitialSolution.h"
 
 std::set<int> InitialSolution::getNextExam() {
-    /*if (unscheduledExams.empty())
-        return {};
-    if (largeExams) {
-        auto exams = manipulator->removeLargestExam(unscheduledExams);
-        if (!exams.empty())
-            return exams;
-        largeExams = false;
-    }
-    return manipulator->removeExamWithLargestDegreeOfSaturation(unscheduledExams);*/
     return manipulator->removeExamDSatur(unscheduledExams);
 }
 
 bool InitialSolution::scheduleExam(const std::set<int> &exams) {
-    if (exams.empty()) {
-        std::cout << "finished initial schedule" << std::endl;
-        return false;
-    }
     for (auto period: manipulator->getValidPeriodsForExams(exams)) {
+        auto previous = manipulator->getPreviousPeriodSameDay(period);
+        auto next = manipulator->getNextPeriodSameDay(period);
+        if (manipulator->hasAnyExamCollisionWithAnyPeriod(exams, {previous, period, next}))
+            continue;
         PeriodChange change(period, exams);
-        if (manipulator->hasAnyExamCollisionWithPeriod(exams, manipulator->getPreviousPeriodSameDay(period)))
+        if (!manipulator->tryAssignRandomRooms(randomSampleSize, change))
             continue;
-        if (manipulator->hasAnyExamCollisionWithPeriod(exams, period))
-            continue;
-        if (manipulator->hasAnyExamCollisionWithPeriod(exams, manipulator->getNextPeriodSameDay(period)))
-            continue;
-        if (!manipulator->tryAssignRandomRoomsForEachExamInOtherPeriod(randomSampleSize, change))
-            continue;
-        manipulator->moveExamsToPeriod(exams, period);
+        manipulator->moveExamsToPeriod(change);
         return true;
     }
-    std::string examsStr;
-    std::for_each(exams.begin(), exams.end(), [&](const int &value) { examsStr += std::to_string(value) + " "; });
-    std::cout << "No slot available for exams: " << examsStr << std::endl;
+    std::cout << "No slot available for exams:";
+    for (const auto& item:exams)
+        std::cout << " " << std::to_string(item);
+    std::cout << std::endl;
     return false;
 }
 

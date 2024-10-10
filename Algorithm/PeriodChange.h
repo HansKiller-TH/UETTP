@@ -11,9 +11,11 @@
 struct PeriodChange {
     const int period;
     const std::set<int> moveIn;
-    const std::set<int> moveOut;
-    explicit PeriodChange(const int period, const std::set<int>& in, const std::set<int>& out) : period(period), moveIn(in), moveOut(out) {}
-    explicit PeriodChange(const int period, const std::set<int>& in) : period(period), moveIn(in) {}
+
+    PeriodChange(const int period, const std::set<int> &moveIn) : period(period), moveIn(moveIn) {}
+
+    explicit PeriodChange(const int period) : period(period){}
+
     PeriodChange() : period(-1) {}
 };
 
